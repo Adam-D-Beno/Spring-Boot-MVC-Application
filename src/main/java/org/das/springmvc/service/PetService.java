@@ -22,14 +22,14 @@ public class PetService {
     public Pet create(Pet petToCreate) {
         var newPetId = ++idPetCounter;
         var newPet = new Pet(
-                newPetId, petToCreate.name(),petToCreate.userId()
+                newPetId, petToCreate.getName(),petToCreate.getUserId()
         );
         this.petMap.put(newPetId, newPet);
         return newPet;
     }
     public List<Pet> create(List<Pet> pets) {
        return pets.stream()
-                .map(pet -> new Pet(++idPetCounter, pet.name(), pet.userId()))
+                .map(pet -> new Pet(++idPetCounter, pet.getName(), pet.getUserId()))
                 .toList();
 
     }
