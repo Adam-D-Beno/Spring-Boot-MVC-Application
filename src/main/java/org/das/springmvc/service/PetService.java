@@ -13,13 +13,25 @@ import java.util.Map;
 public class PetService {
 
     private final Map<Long, Pet> petMap;
-
+    private Long idPetCounter;
     public PetService() {
-        this.petMap = new HashMap<>();;
+        this.petMap = new HashMap<>();
+        this.idPetCounter = 0L;
     }
 
     public Pet create(Pet petToCreate) {
-        return null;
+        var newPetId = ++idPetCounter;
+        var newPet = new Pet(
+                newPetId, petToCreate.name(),petToCreate.userId()
+        );
+        this.petMap.put(newPetId, newPet);
+        return newPet;
+    }
+    public List<Pet> create(List<Pet> pets) {
+       return pets.stream()
+                .map(pet -> new Pet(++idPetCounter, pet.name(), pet.userId()))
+                .toList();
+
     }
 
     public Pet updateById(Long id, Pet petToUpdate) {

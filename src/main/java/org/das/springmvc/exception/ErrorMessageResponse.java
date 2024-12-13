@@ -1,4 +1,4 @@
-package org.das.springmvc.util;
+package org.das.springmvc.exception;
 
 import java.time.LocalDateTime;
 

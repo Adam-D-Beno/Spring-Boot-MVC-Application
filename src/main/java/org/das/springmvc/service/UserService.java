@@ -2,32 +2,33 @@ package org.das.springmvc.service;
 
 import org.das.springmvc.model.Pet;
 import org.das.springmvc.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class UserService {
 
     private final Map<Long, User> userMap;
     private Long idUserCounter;
-    private Long idPetCounter;
+    private final PetService petService;
 
-    public UserService() {
+    @Autowired
+    public UserService(PetService petService) {
+        this.petService = petService;
         this.userMap = new HashMap<>();
         this.idUserCounter = 0L;
-        this.idPetCounter = 0L;
     }
 
     public User create(User userToCreate) {
         var newUserId = ++idUserCounter;
-
-        List<Pet> pets = userToCreate.pets().stream()
-                .map(pet -> new Pet(++idPetCounter, pet.name(), newUserId))
-                .toList();
+        var pets = userToCreate.pets();
+        if (pets != null) {
+            pets = petService.create(pets);
+        } else {
+            pets = Collections.emptyList();
+        }
 
         var newUser = new User(
                 idUserCounter,
