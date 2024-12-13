@@ -23,7 +23,7 @@ public class UserService {
 
     public User create(User userToCreate) {
         var newUserId = ++idUserCounter;
-        var pets = userToCreate.pets();
+        var pets = userToCreate.getPets();
         if (pets != null) {
             pets = petService.create(pets);
         } else {
@@ -32,10 +32,10 @@ public class UserService {
 
         var newUser = new User(
                 idUserCounter,
-                userToCreate.name(),
-                userToCreate.email(),
-                userToCreate.age(),
-                new ArrayList<>(pets)
+                userToCreate.getName(),
+                userToCreate.getName(),
+                userToCreate.getAge(),
+                pets
         );
 
         this.userMap.put(newUserId, newUser);
