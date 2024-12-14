@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
@@ -39,4 +40,29 @@ public class GlobalExceptionHandler {
                 .body(errorDto);
     }
 
+    @ExceptionHandler
+    public ResponseEntity<ErrorMessageResponse> handleGenericException(Exception e) {
+        LOGGER.error("Got validation exception: ", e);
+        var error = new ErrorMessageResponse(
+                "Server error",
+                e.getMessage()
+                ,LocalDateTime.now()
+        );
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(error);
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<ErrorMessageResponse> handleNotFoundException(NoSuchElementException e) {
+        LOGGER.error("Got validation exception: NoSuchElementException", e);
+        var error = new ErrorMessageResponse(
+                "No such Element found",
+                e.getMessage(),
+                LocalDateTime.now()
+        );
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(error);
+    }
 }
