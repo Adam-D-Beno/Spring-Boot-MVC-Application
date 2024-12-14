@@ -24,7 +24,7 @@ public class UserController {
 
     @PostMapping("/users")
     public User create(@RequestBody @Valid User userToCreate) {
-        LOGGER.info("Get request for created user: user={}", userToCreate);
+        LOGGER.info("Get request in UserController for created user: user={}", userToCreate);
         return userService.create(userToCreate);
     }
 
@@ -32,14 +32,14 @@ public class UserController {
     public User updateById(
            @PathVariable @NotNull Long id,
            @RequestBody @Valid User userToUpdate) {
-        LOGGER.info("Get request update for user with id: id={}, user: user={}", id, userToUpdate);
+        LOGGER.info("Get request in UserController update for user with id: id={}, user: user={}", id, userToUpdate);
         return userService.updateById(id, userToUpdate);
     }
 
     @DeleteMapping("/users/{id}")
     public void deleteById(@PathVariable @NotNull Long id) {
-        LOGGER.info("Get request delete for user with id: id={}", id);
-        userService.findById(id);
+        LOGGER.info("Get request in UserController delete for user with id: id={}", id);
+        userService.deleteById(id);
     }
 
     @GetMapping("/users")
@@ -47,14 +47,14 @@ public class UserController {
            @RequestParam(value = "name", required = false) String name,
            @RequestParam(value = "email", required = false) String email
     ) {
-        LOGGER.info("Get request findAll for user with name: name={}, email: email={}"
-                , name, email);
+        LOGGER.info("Get request in UserController findAll for user with name: name={}, email: email={}"
+                ,name ,email);
         return userService.findAll(name, email);
     }
 
     @GetMapping("/users/{id}")
     public User findById(@PathVariable @NotNull Long id) {
-        LOGGER.info("Get request find for user with id: id={}", id);
+        LOGGER.info("Get request in UserController find for user with id: id={}", id);
         return userService.findById(id);
     }
 }
