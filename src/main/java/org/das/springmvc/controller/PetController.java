@@ -3,7 +3,6 @@ package org.das.springmvc.controller;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.das.springmvc.model.Pet;
-import org.das.springmvc.model.User;
 import org.das.springmvc.service.PetService;
 import org.das.springmvc.service.UserService;
 import org.slf4j.Logger;
