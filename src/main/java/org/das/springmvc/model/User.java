@@ -1,23 +1,28 @@
 package org.das.springmvc.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class User {
     @Null(message = "Filed user id must be null")
-    private final Long id;
+    private Long id;
 
     @Size(max = 50, message = "Filed size user name must be max=50")
     @NotBlank(message = "Filed user name must be not null or blank")
-    private final String name;
+    private String name;
 
     @Size(max = 50, message = "Filed user email must be max=50")
     @Email(message = "Filed user email must be email format")
     @NotBlank(message = "Filed user email must be not null or blank")
-    private final String email;
+    private String email;
 
     @Min(value = 1, message = "Filed value user age must be min=1 and max=100")
     @Max(value = 100, message = "Filed value user age must be min=1 and max=100")
@@ -25,7 +30,7 @@ public class User {
     @Digits(integer = 3, fraction = 0, message = "Filed value user age  is an integer with a maximum of 3 digits")
     private Integer age;
 
-    private final List<Pet> pets;
+    private List<Pet> pets;
 
     public User(Long id, String name, String email, Integer age, List<Pet> pets) {
         this.id = id;
@@ -35,57 +40,85 @@ public class User {
         this.pets = pets;
     }
 
-        public Long getId() {
-                return id;
-        }
+    public Long getId() {
+        return id;
+    }
 
-        public String getName() {
-                return name;
-        }
+    public String getName() {
+        return name;
+    }
 
-        public String getEmail() {
-                return email;
-        }
+    public String getEmail() {
+        return email;
+    }
 
-        public Integer getAge() {
-                return age;
-        }
+    public Integer getAge() {
+        return age;
+    }
 
-        public List<Pet> getPets() {
-                return List.copyOf(pets);
-        }
+    public List<Pet> getPets() {
+        return List.copyOf(pets);
+    }
 
-        public boolean addPet(Pet pet) {
-        return pets.add(pet);
-        }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-        public boolean removePet(Pet pet) {
-        return pets.remove(pet);
-        }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-        @Override
-        public String toString() {
-                return "User{" +
-                        "id=" + id +
-                        ", name='" + name + '\'' +
-                        ", email='" + email + '\'' +
-                        ", age=" + age +
-                        ", pets=" + pets +
-                        '}';
-        }
+    public void setAge(Integer age) {
+        this.age = age;
+    }
 
-        @Override
-        public boolean equals(Object o) {
-                if (o == null || getClass() != o.getClass()) return false;
+    @JsonIgnore
+    public boolean isPetsEmpty() {
+        return pets == null;
+    }
 
-                User user = (User) o;
-                return Objects.equals(id, user.id) && Objects.equals(name, user.name);
-        }
+    public void addPet(Pet pet) {
+        List<Pet> mutList = new ArrayList<>(this.getPets());
+        mutList.add(pet);
+        this.pets = List.copyOf(mutList);
+    }
 
-        @Override
-        public int hashCode() {
-                int result = Objects.hashCode(id);
-                result = 31 * result + Objects.hashCode(name);
-                return result;
-        }
+    public void addPets(List<Pet> pets) {
+        List<Pet> mutList = new ArrayList<>(this.getPets());
+        mutList.addAll(pets);
+        this.pets = List.copyOf(mutList);
+    }
+
+
+    public void removePet(Pet pet) {
+        List<Pet> mutList = new ArrayList<>(this.getPets());
+        mutList.remove(pet);
+        this.pets = List.copyOf(mutList);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", age=" + age +
+                ", pets=" + pets +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+
+        User user = (User) o;
+        return Objects.equals(id, user.id) && Objects.equals(name, user.name);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hashCode(id);
+        result = 31 * result + Objects.hashCode(name);
+        return result;
+    }
 }
