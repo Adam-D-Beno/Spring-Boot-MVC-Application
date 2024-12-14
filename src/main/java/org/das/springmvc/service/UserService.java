@@ -44,7 +44,7 @@ public class UserService {
     public User updateById(Long id, User userToUpdate) {
         LOGGER.info("execute method updateById in UserService, user: user={} and id: id={}", userToUpdate, id);
         User user = Optional.ofNullable(userMap.get(id))
-                .orElseThrow(() -> new NoSuchElementException("No such user with id=%s not found"
+                .orElseThrow(() -> new NoSuchElementException("No such user with id=%s"
                         .formatted(id)));
 
         if (userToUpdate.isPetsEmpty()) {
@@ -65,7 +65,7 @@ public class UserService {
     public void deleteById(Long id) {
         LOGGER.info("execute method deleteById in UserService, id: id={}", id);
         Optional.ofNullable(userMap.remove(id))
-                .orElseThrow(() -> new NoSuchElementException("No such user with id=%s not found"
+                .orElseThrow(() -> new NoSuchElementException("No such user with id=%s"
                         .formatted(id)));
     }
 
@@ -82,7 +82,7 @@ public class UserService {
     public User findById(Long id) {
         LOGGER.info("execute method findById in UserService, id: id={}", id);
         return Optional.ofNullable(userMap.get(id))
-                .orElseThrow(() -> new NoSuchElementException("No such user with id=%s not found"
+                .orElseThrow(() -> new NoSuchElementException("No such user with id=%s"
                         .formatted(id)));
     }
 }
