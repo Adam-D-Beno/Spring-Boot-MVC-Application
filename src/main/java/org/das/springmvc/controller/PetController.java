@@ -8,6 +8,8 @@ import org.das.springmvc.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,25 +27,30 @@ public class PetController {
     }
 
     @PostMapping("/pets")
-    public Pet create(@RequestBody @Valid Pet petToCreate) {
+    public ResponseEntity<Pet> create(@RequestBody @Valid Pet petToCreate) {
         LOGGER.info("Get request in PetController for created pet: pet={}", petToCreate);
         Pet pet = petService.create(petToCreate);
         if (!petToCreate.isUserIdEmpty()) {
             userService.findById(petToCreate.getUserId()).addPet(pet);
         }
-        return pet;
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(pet);
     }
 
     @PutMapping("/pets/{id}")
-    public Pet updateById(
+    public ResponseEntity<Pet> updateById(
            @PathVariable @NotNull Long id,
            @RequestBody @Valid Pet petToUpdate) {
         LOGGER.info("Get request in PetController update for pet with id: id={}, pet: pet={}", id, petToUpdate);
-        return petService.updateById(id, petToUpdate);
+        Pet updatedPet = petService.updateById(id, petToUpdate);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(updatedPet);
     }
 
     @DeleteMapping("/pets/{id}")
-    public void deleteById(@PathVariable @NotNull Long id) {
+    public ResponseEntity<Void> deleteById(@PathVariable @NotNull Long id) {
         LOGGER.info("Get request in PetController delete for pet with id: id={}", id);
         Pet pet = petService.deleteById(id);
         if (!pet.isUserIdEmpty()) {
@@ -51,21 +58,30 @@ public class PetController {
                     ,id ,pet);
             userService.findById(pet.getUserId()).removePet(pet);
         }
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();
     }
 
     @GetMapping("/pets")
-    public List<Pet> findAll(
+    public ResponseEntity<List<Pet>> findAll(
            @RequestParam(value = "name", required = false) String name,
            @RequestParam(value = "userId", required = false) Long userId
     ) {
         LOGGER.info("Get request in PetController findAll for pet with name: name={}, userId: userId={}"
                 , name, userId);
-        return petService.findAll(name, userId);
+        List<Pet> pets = petService.findAll(name, userId);
+        return ResponseEntity
+                .status(HttpStatus.FOUND)
+                .body(pets);
     }
 
     @GetMapping("/pets/{id}")
-    public Pet findById(@PathVariable @NotNull Long id) {
+    public ResponseEntity<Pet> findById(@PathVariable @NotNull Long id) {
         LOGGER.info("Get request in PetController find for pet with id: id={}", id);
-        return petService.findById(id);
+        Pet pet = petService.findById(id);
+        return ResponseEntity
+                .status(HttpStatus.FOUND)
+                .body(pet);
     }
 }
