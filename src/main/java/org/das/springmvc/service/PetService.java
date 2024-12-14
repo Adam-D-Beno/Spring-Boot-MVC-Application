@@ -1,8 +1,7 @@
 package org.das.springmvc.service;
 
-import jakarta.annotation.PostConstruct;
+
 import org.das.springmvc.model.Pet;
-import org.das.springmvc.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
