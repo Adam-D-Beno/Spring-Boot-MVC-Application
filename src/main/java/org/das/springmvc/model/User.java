@@ -40,6 +40,9 @@ public class User {
         this.pets = pets;
     }
 
+    public User() {
+    }
+
     public Long getId() {
         return id;
     }
@@ -112,13 +115,13 @@ public class User {
         if (o == null || getClass() != o.getClass()) return false;
 
         User user = (User) o;
-        return Objects.equals(id, user.id) && Objects.equals(name, user.name);
+        return Objects.equals(name, user.name) && Objects.equals(email, user.email);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hashCode(id);
-        result = 31 * result + Objects.hashCode(name);
+        int result = Objects.hashCode(name);
+        result = 31 * result + Objects.hashCode(email);
         return result;
     }
 }
