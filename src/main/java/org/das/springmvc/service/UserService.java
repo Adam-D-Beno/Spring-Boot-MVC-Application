@@ -33,7 +33,7 @@ public class UserService {
         var newUser = new User(
                 idUserCounter,
                 userToCreate.getName(),
-                userToCreate.getName(),
+                userToCreate.getEmail(),
                 userToCreate.getAge(),
                 pets
         );
