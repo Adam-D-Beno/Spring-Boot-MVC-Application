@@ -1,5 +1,6 @@
 package org.das.springmvc.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.*;
 
 import java.util.Objects;
@@ -41,6 +42,11 @@ public class Pet {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    @JsonIgnore
+    public boolean isUserIdEmpty() {
+        return userId == null;
     }
 
     @Override
