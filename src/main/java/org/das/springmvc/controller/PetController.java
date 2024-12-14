@@ -28,7 +28,11 @@ public class PetController {
     @PostMapping("/pets")
     public Pet create(@RequestBody @Valid Pet petToCreate) {
         LOGGER.info("Get request in PetController for created pet: pet={}", petToCreate);
-        return petService.create(petToCreate);
+        Pet pet = petService.create(petToCreate);
+        if (!petToCreate.isUserIdEmpty()) {
+            userService.findById(petToCreate.getUserId()).addPet(pet);
+        }
+        return pet;
     }
 
     @PutMapping("/pets/{id}")
@@ -43,7 +47,7 @@ public class PetController {
     public void deleteById(@PathVariable @NotNull Long id) {
         LOGGER.info("Get request in PetController delete for pet with id: id={}", id);
         Pet pet = petService.deleteById(id);
-        if (pet.getUserId() != null) {
+        if (!pet.isUserIdEmpty()) {
             LOGGER.info("execute method findById and removePet in UserService, userId: id={}, pet: pet={}"
                     ,id ,pet);
             userService.findById(pet.getUserId()).removePet(pet);
