@@ -35,6 +35,7 @@ public class PetService {
         LOGGER.info("execute method Create in PetService, pets: pets={}", pets);
         return pets.stream()
                 .map(pet -> new Pet(++idPetCounter, pet.getName(), userId))
+                .peek(pet -> this.petMap.put(pet.getId(), pet))
                 .toList();
     }
 
