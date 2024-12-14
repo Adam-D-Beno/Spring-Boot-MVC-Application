@@ -14,10 +14,8 @@ public class PetService {
     private final Map<Long, Pet> petMap;
     private Long idPetCounter;
     private final static Logger LOGGER = LoggerFactory.getLogger(PetService.class);
-    private final UserService userService;
 
-    public PetService(UserService userService) {
-        this.userService = userService;
+    public PetService() {
         this.petMap = new HashMap<>();
         this.idPetCounter = 0L;
     }
@@ -53,18 +51,17 @@ public class PetService {
         return pet;
     }
 
-    public void deleteById(Long id) {
+    public Pet deleteById(Long id) {
 
         LOGGER.info("execute method deleteById in PetService, PetId: id={}", id);
-        Pet pet = Optional.ofNullable(petMap.remove(id))
+        return Optional.ofNullable(petMap.remove(id))
                 .orElseThrow(() -> new NoSuchElementException("No such pet with id=%s not found"
                         .formatted(id)));
-
-        if (pet.getUserId() != null) {
-            LOGGER.info("execute method findById and removePet in UserService, userId: id={}, pet: pet={}"
-                    , pet.getUserId(), pet);
-            userService.findById(pet.getUserId()).removePet(pet);
-        }
+//        if (pet.getUserId() != null) {
+//            LOGGER.info("execute method findById and removePet in UserService, userId: id={}, pet: pet={}"
+//                    , pet.getUserId(), pet);
+//            userService.findById(pet.getUserId()).removePet(pet);
+//        }
     }
 
     public List<Pet> findAll(String name, Long userId) {
