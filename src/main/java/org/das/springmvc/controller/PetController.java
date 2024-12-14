@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import org.das.springmvc.model.Pet;
 import org.das.springmvc.model.User;
 import org.das.springmvc.service.PetService;
+import org.das.springmvc.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +17,12 @@ import java.util.List;
 public class PetController {
     private final static Logger LOGGER = LoggerFactory.getLogger(PetController.class);
     private final PetService petService;
+    private final UserService userService;
 
     @Autowired
-    public PetController(PetService petService) {
+    public PetController(PetService petService, UserService userService) {
         this.petService = petService;
+        this.userService = userService;
     }
 
     @PostMapping("/pets")
@@ -39,7 +42,12 @@ public class PetController {
     @DeleteMapping("pets/{id}")
     public void deleteById(@PathVariable @NotNull Long id) {
         LOGGER.info("Get request in PetController delete for pet with id: id={}", id);
-        petService.deleteById(id);
+        Pet pet = petService.deleteById(id);
+        if (pet.getUserId() != null) {
+            LOGGER.info("execute method findById and removePet in UserService, userId: id={}, pet: pet={}"
+                    ,id ,pet);
+            userService.findById(pet.getUserId()).removePet(pet);
+        }
     }
 
     @GetMapping("/pets")
