@@ -41,15 +41,21 @@ public class UserController {
         LOGGER.info("Get request in UserController delete for user with id: id={}", id);
         userService.deleteById(id);
     }
+//
+//    @GetMapping("/users")
+//    public List<User> findAll(
+//           @RequestParam(value = "name", required = false) String name,
+//           @RequestParam(value = "email", required = false) String email
+//    ) {
+//        LOGGER.info("Get request in UserController findAll for user with name: name={}, email: email={}"
+//                ,name ,email);
+//        return userService.findAll(name, email);
+//    }
 
     @GetMapping("/users")
     public List<User> findAll(
-           @RequestParam(value = "name", required = false) String name,
-           @RequestParam(value = "email", required = false) String email
     ) {
-        LOGGER.info("Get request in UserController findAll for user with name: name={}, email: email={}"
-                ,name ,email);
-        return userService.findAll(name, email);
+        return userService.findAll(null, null);
     }
 
     @GetMapping("/users/{id}")
