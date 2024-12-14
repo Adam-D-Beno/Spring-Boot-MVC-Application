@@ -67,8 +67,8 @@
                             <artifactId>lombok</artifactId>
                         </path>
                     </annotationProcessorPaths>
-                    <source>21</source>
-                    <target>21</target>
+                    <source>23</source>
+                    <target>23</target>
                     <compilerArgs>--enable-preview</compilerArgs>
                 </configuration>
             </plugin>
