@@ -6,16 +6,16 @@ import java.util.Objects;
 
 public class Pet {
         @Null(message = "Filed user id must be null")
-       private final Long id;
+       private Long id;
 
         @Size(max = 50, message = "Filed size user name must be max=50")
         @NotBlank(message = "Filed user name must be not null or blank")
-        private final String name;
+        private String name;
 
         @NotNull(message = "Filed user age must be not null")
         @Digits(integer = Integer.MAX_VALUE, fraction = 0,
-                message = "Filed value user age  is an integer with a maximum of 3 digits")
-        private final Long userId;
+                message = "Filed value userId is an integer with a maximum")
+        private Long userId;
 
         public Pet(Long id, String name, Long userId) {
                 this.id = id;
@@ -35,7 +35,15 @@ public class Pet {
                 return userId;
         }
 
-        @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    @Override
         public String toString() {
                 return "Pet{" +
                         "id=" + id +
