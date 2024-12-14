@@ -42,7 +42,7 @@ public class PetController {
         return petService.updateById(id, petToUpdate);
     }
 
-    @DeleteMapping("pets/{id}")
+    @DeleteMapping("/pets/{id}")
     public void deleteById(@PathVariable @NotNull Long id) {
         LOGGER.info("Get request in PetController delete for pet with id: id={}", id);
         Pet pet = petService.deleteById(id);
