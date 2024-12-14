@@ -24,7 +24,7 @@ public class PetController {
 
     @PostMapping("/pets")
     public Pet create(@RequestBody @Valid Pet petToCreate) {
-        LOGGER.info("Get request for created pet: pet={}", petToCreate);
+        LOGGER.info("Get request in PetController for created pet: pet={}", petToCreate);
         return petService.create(petToCreate);
     }
 
@@ -32,13 +32,13 @@ public class PetController {
     public Pet updateById(
            @PathVariable @NotNull Long id,
            @RequestBody @Valid Pet petToUpdate) {
-        LOGGER.info("Get request update for pet with id: id={}, pet: pet={}", id, petToUpdate);
+        LOGGER.info("Get request in PetController update for pet with id: id={}, pet: pet={}", id, petToUpdate);
         return petService.updateById(id, petToUpdate);
     }
 
     @DeleteMapping("pets/{id}")
     public void deleteById(@PathVariable @NotNull Long id) {
-        LOGGER.info("Get request delete for pet with id: id={}", id);
+        LOGGER.info("Get request in PetController delete for pet with id: id={}", id);
         petService.deleteById(id);
     }
 
@@ -47,14 +47,14 @@ public class PetController {
            @RequestParam(value = "name", required = false) String name,
            @RequestParam(value = "userId", required = false) Long userId
     ) {
-        LOGGER.info("Get request findAll for pet with name: name={}, userId: userId={}"
+        LOGGER.info("Get request in PetController findAll for pet with name: name={}, userId: userId={}"
                 , name, userId);
         return petService.findAll(name, userId);
     }
 
     @GetMapping("/pets/{id}")
     public Pet findById(@PathVariable @NotNull Long id) {
-        LOGGER.info("Get request find for pet with id: id={}", id);
+        LOGGER.info("Get request in PetController find for pet with id: id={}", id);
         return petService.findById(id);
     }
 }
