@@ -42,7 +42,7 @@ public class PetService {
     public Pet updateById(Long id, Pet petToUpdate) {
         LOGGER.info("execute method updateById in PetService, pet: pet={} and id: id={}", petToUpdate, id);
         Pet pet = Optional.ofNullable(petMap.get(id))
-                .orElseThrow(() -> new NoSuchElementException("No such pet with id=%s not found"
+                .orElseThrow(() -> new NoSuchElementException("No such pet with id=%s"
                         .formatted(id)));
 
         pet.setName(petToUpdate.getName());
@@ -56,13 +56,8 @@ public class PetService {
 
         LOGGER.info("execute method deleteById in PetService, PetId: id={}", id);
         return Optional.ofNullable(petMap.remove(id))
-                .orElseThrow(() -> new NoSuchElementException("No such pet with id=%s not found"
+                .orElseThrow(() -> new NoSuchElementException("No such pet with id=%s"
                         .formatted(id)));
-//        if (pet.getUserId() != null) {
-//            LOGGER.info("execute method findById and removePet in UserService, userId: id={}, pet: pet={}"
-//                    , pet.getUserId(), pet);
-//            userService.findById(pet.getUserId()).removePet(pet);
-//        }
     }
 
     public List<Pet> findAll(String name, Long userId) {
@@ -78,7 +73,7 @@ public class PetService {
     public Pet findById(Long id) {
         LOGGER.info("execute method findById in PetService, for pet with id: id={}", id);
         return Optional.ofNullable(petMap.get(id))
-                .orElseThrow(() -> new NoSuchElementException("No such pet with id=%s not found"
+                .orElseThrow(() -> new NoSuchElementException("No such pet with id=%s"
                         .formatted(id)));
     }
 }
