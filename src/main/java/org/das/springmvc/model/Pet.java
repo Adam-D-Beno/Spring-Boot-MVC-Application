@@ -24,7 +24,10 @@ public class Pet {
                 this.userId = userId;
         }
 
-        public Long getId() {
+    public Pet() {
+    }
+
+    public Long getId() {
                 return id;
         }
 
@@ -58,19 +61,18 @@ public class Pet {
                         '}';
         }
 
-        @Override
-        public boolean equals(Object o) {
-                if (o == null || getClass() != o.getClass()) return false;
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
 
-                Pet pet = (Pet) o;
-                return Objects.equals(id, pet.id) && Objects.equals(name, pet.name) && Objects.equals(userId, pet.userId);
-        }
+        Pet pet = (Pet) o;
+        return Objects.equals(name, pet.name) && Objects.equals(userId, pet.userId);
+    }
 
-        @Override
-        public int hashCode() {
-                int result = Objects.hashCode(id);
-                result = 31 * result + Objects.hashCode(name);
-                result = 31 * result + Objects.hashCode(userId);
-                return result;
-        }
+    @Override
+    public int hashCode() {
+        int result = Objects.hashCode(name);
+        result = 31 * result + Objects.hashCode(userId);
+        return result;
+    }
 }
