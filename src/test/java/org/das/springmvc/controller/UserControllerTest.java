@@ -300,7 +300,7 @@ class UserControllerTest {
     }
 
     @Test
-    void shouldNotSuccessFindByIdUserAndThrownSuchElementException() throws Exception {
+    void shouldNotSuccessFindByIdUserWhenUserNotFoundAndThrownNoSuchElementException() throws Exception {
         Long userIdForSearch = 1L;
         Exception noSuchElementException = mockMvc.perform(get("/users/{id}", userIdForSearch)
                         .contentType(MediaType.APPLICATION_JSON))
