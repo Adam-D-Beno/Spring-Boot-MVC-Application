@@ -63,7 +63,7 @@ public class UserController {
                 ,name ,email);
         List<User> users = userService.findAll(name, email);
         return ResponseEntity
-                .status(HttpStatus.FOUND)
+                .status(HttpStatus.OK)
                 .body(users);
     }
 
@@ -72,7 +72,7 @@ public class UserController {
         LOGGER.info("Get request in UserController find for user with id: id={}", id);
         User user = userService.findById(id);
         return ResponseEntity
-                .status(HttpStatus.FOUND)
+                .status(HttpStatus.OK)
                 .body(user);
     }
 }
