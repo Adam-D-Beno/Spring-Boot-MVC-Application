@@ -72,11 +72,16 @@ public class UserService {
     public List<User> findAll(String name, String email) {
         LOGGER.info("execute method findAll in UserService, for user with name: name={}, email: email={}"
                 ,name ,email);
-        return  userMap.values()
+        List<User> users = userMap.values()
                 .stream()
                 .filter(user -> Objects.isNull(name) || user.getName().equals(name))
-                .filter(user ->Objects.isNull(email) || user.getEmail().equals(email))
+                .filter(user -> Objects.isNull(email) || user.getEmail().equals(email))
                 .toList();
+        if (users.isEmpty()) {
+            throw new NoSuchElementException("No such users = %s parameter: name = %s, email = %s"
+                    .formatted(users, name, email));
+        }
+        return users;
     }
 
     public User findById(Long id) {
