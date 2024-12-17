@@ -383,7 +383,7 @@ class UserControllerTest {
 
     @Test
     void shouldNotSuccessUserFindAllWithParameterNameAndEmailAndThrownNoSuchElementException() throws Exception {
-        var userNotExpected= userService.create(
+        userService.create(
                 new User(
                         null,
                         "test2",
@@ -392,7 +392,7 @@ class UserControllerTest {
                         new ArrayList<>(
                                 List.of(new Pet(null, "cat", null))))
         );
-        var userExpected = userService.create(
+       userService.create(
                 new User(
                         null,
                         "test1",
