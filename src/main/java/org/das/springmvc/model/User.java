@@ -43,6 +43,8 @@ public class User {
     public User() {
     }
 
+
+
     public Long getId() {
         return id;
     }
@@ -77,7 +79,7 @@ public class User {
 
     @JsonIgnore
     public boolean isPetsEmpty() {
-        return pets == null;
+        return pets == null || pets.isEmpty();
     }
 
     public void addPet(Pet pet) {
