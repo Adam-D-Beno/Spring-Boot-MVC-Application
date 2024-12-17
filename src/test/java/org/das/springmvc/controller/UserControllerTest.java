@@ -1,7 +1,6 @@
 package org.das.springmvc.controller;
 
-
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.das.springmvc.model.Pet;
 import org.das.springmvc.model.User;
@@ -13,15 +12,15 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
-
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.NoSuchElementException;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.web.servlet.function.RequestPredicates.param;
 
 @AutoConfigureMockMvc
 @SpringBootTest
@@ -176,15 +175,14 @@ class UserControllerTest {
                 new ArrayList<>()
         );
 
-        var newUserForUpdate = new User(
+        var userForUpdate = new User(
                 null,
                 "testUpdate",
                 "testUpdate@test.ru",
                 45,
-                new ArrayList<>(
-                        List.of(new Pet(null, "cat", null)))
+                new ArrayList<>(List.of(new Pet(null, "cat", null)))
         );
-        String jsonForUpdateUser = objectMapper.writeValueAsString(newUserForUpdate);
+        String jsonForUpdateUser = objectMapper.writeValueAsString(userForUpdate);
 
         String jsonUpdatedUser = mockMvc.perform(put("/users/{id}", userCreatedId)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -255,24 +253,106 @@ class UserControllerTest {
     }
 
     @Test
-    void shouldSuccessDeleteUserById() {
+    void shouldSuccessUserDeleteById() throws Exception {
+        var userForDelete = userService.create(
+                new User(
+                        null,
+                        "test",
+                        "test@test.ru",
+                        35,
+                        new ArrayList<>(
+                                List.of(new Pet(null, "cat", null))))
+        );
+
+        mockMvc.perform(delete("/users/{id}", userForDelete.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(status().isNoContent());
     }
 
     @Test
-    void shouldNotSuccessDeleteUserById() {
+    void shouldNotSuccessUserDeleteWhenUserNotFoundAndThrownNoSuchElementException() throws Exception {
+        Long userIdForDelete = 1L;
+        Exception noSuchElementException = mockMvc.perform(delete("/users/{id}", userIdForDelete)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andReturn()
+                .getResolvedException();
+
+        Assertions.assertThrows(java.util.NoSuchElementException.class,
+                () -> {
+                    assert noSuchElementException != null;
+                    throw noSuchElementException;
+                }
+        );
     }
 
     @Test
-    void shouldSuccessUserFindAll() {
+    void shouldSuccessUserFindAll() throws Exception {
+        var userFirstExpected = userService.create(
+                new User(
+                        null,
+                        "test",
+                        "test@test.ru",
+                        35,
+                        new ArrayList<>(
+                                List.of(new Pet(null, "cat", null))))
+        );
+
+        var userSecondExpected = userService.create(
+                new User(
+                        null,
+                        "test2",
+                        "test@test2.ru",
+                        45,
+                        new ArrayList<>(
+                                List.of(new Pet(null, "dog", null))))
+        );
+
+        String jsonFoundAllUsers = mockMvc.perform(get("/users")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        List<User> foundUsers = objectMapper.readValue(jsonFoundAllUsers, new TypeReference<List<User>>() {});
+
+        assertThat(foundUsers).isNotEmpty();
+        assertThat(foundUsers)
+                .hasSize(2)
+                .contains(userFirstExpected, userSecondExpected);
+
+        assertThat(foundUsers).usingRecursiveFieldByFieldElementComparator().contains(userFirstExpected);
+        assertThat(foundUsers).usingRecursiveFieldByFieldElementComparator().contains(userSecondExpected);
     }
 
     @Test
-    void shouldNotSuccessFindAllUser() {
+    void shouldNotSuccessFindAllUserWhenAllUsersNotFoundAndThrownNoSuchElementException() throws Exception {
+        Exception noSuchElementException = mockMvc.perform(get("/users")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andReturn()
+                .getResolvedException();
+
+        Assertions.assertThrows(java.util.NoSuchElementException.class,
+                () -> {
+                    assert noSuchElementException != null;
+                    throw noSuchElementException;
+                }
+        );
     }
 
     @Test
-    void shouldSuccessFindByIdUser() throws Exception {
-
+    void shouldSuccessUserFindAllWithParameterNameAndEmail() throws Exception {
+        var userNotExpected= userService.create(
+                new User(
+                        null,
+                        "test2",
+                        "test2@test.ru",
+                        45,
+                        new ArrayList<>(
+                                List.of(new Pet(null, "cat", null))))
+        );
         var userExpected = userService.create(
                 new User(
                         null,
@@ -282,19 +362,87 @@ class UserControllerTest {
                         new ArrayList<>(
                                 List.of(new Pet(null, "cat", null))))
         );
-        Long userIdForSearch = userExpected.getId();
+        String parameterName = "test";
+        String parameterEmail = "test@test.ru";
 
-        String jsonUserForSearch = objectMapper.writeValueAsString(userExpected);
-        String jsonFoundUser = mockMvc.perform(get("/users/{id}", userIdForSearch)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonUserForSearch))
-                .andExpect(status().isFound())
+        String jsonFoundAllUsers = mockMvc.perform(get("/users")
+                        .param("name", parameterName)
+                        .param("email", parameterEmail)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        List<User> foundUsers = objectMapper.readValue(jsonFoundAllUsers, new TypeReference<List<User>>() {});
+
+        assertThat(foundUsers).isNotEmpty();
+        assertThat(foundUsers).usingRecursiveFieldByFieldElementComparator().contains(userExpected);
+        assertThat(foundUsers).doesNotContain(userNotExpected);
+    }
+
+    @Test
+    void shouldNotSuccessUserFindAllWithParameterNameAndEmailAndThrownNoSuchElementException() throws Exception {
+        var userNotExpected= userService.create(
+                new User(
+                        null,
+                        "test2",
+                        "test2@test.ru",
+                        45,
+                        new ArrayList<>(
+                                List.of(new Pet(null, "cat", null))))
+        );
+        var userExpected = userService.create(
+                new User(
+                        null,
+                        "test1",
+                        "test1@test.ru",
+                        35,
+                        new ArrayList<>(
+                                List.of(new Pet(null, "cat", null))))
+        );
+        String parameterName = "test";
+        String parameterEmail = "test@test.ru";
+
+        Exception noSuchElementException = mockMvc.perform(get("/users")
+                        .param("name", parameterName)
+                        .param("email", parameterEmail)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andReturn()
+                .getResolvedException();
+
+        Assertions.assertThrows(java.util.NoSuchElementException.class,
+                () -> {
+                    assert noSuchElementException != null;
+                    throw noSuchElementException;
+                }
+        );
+
+    }
+
+
+    @Test
+    void shouldSuccessFindByIdUser() throws Exception {
+        var userExpected = userService.create(
+                new User(
+                        null,
+                        "test",
+                        "test@test.ru",
+                        35,
+                        new ArrayList<>(
+                                List.of(new Pet(null, "cat", null))))
+        );
+
+        String jsonFoundUser = mockMvc.perform(get("/users/{id}", userExpected.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
 
         User foundUser = objectMapper.readValue(jsonFoundUser, User.class);
-        org.assertj.core.api.Assertions.assertThat(userExpected)
+        assertThat(userExpected)
                 .usingRecursiveComparison()
                 .isEqualTo(foundUser);
     }
@@ -303,7 +451,7 @@ class UserControllerTest {
     void shouldNotSuccessFindByIdUserWhenUserNotFoundAndThrownNoSuchElementException() throws Exception {
         Long userIdForSearch = 1L;
         Exception noSuchElementException = mockMvc.perform(get("/users/{id}", userIdForSearch)
-                        .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andReturn().getResolvedException();
         Assertions.assertThrows(java.util.NoSuchElementException.class,
