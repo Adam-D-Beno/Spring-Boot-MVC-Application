@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
+//todo export in main branch
 @RequestMapping("/pets")
 @RestController
 public class PetController {
@@ -31,7 +32,7 @@ public class PetController {
         LOGGER.info("Get request in PetController for created pet: pet={}", petToCreate);
         Pet pet = petService.create(petToCreate);
         if (!petToCreate.isUserIdEmpty()) {
-            userService.findById(petToCreate.getUserId()).addPet(pet);
+            userService.findById(petToCreate.userId()).addPet(pet);
         }
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -56,7 +57,7 @@ public class PetController {
         if (!pet.isUserIdEmpty()) {
             LOGGER.info("execute method findById and removePet in UserService, userId: id={}, pet: pet={}"
                     ,id ,pet);
-            userService.findById(pet.getUserId()).removePet(pet);
+            userService.findById(pet.userId()).removePet(pet);
         }
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)

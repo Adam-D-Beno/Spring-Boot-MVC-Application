@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.web.servlet.function.RequestPredicates.param;
-
+//todo export in main branch
 @AutoConfigureMockMvc
 @SpringBootTest
 class UserControllerTest {
@@ -52,11 +52,11 @@ class UserControllerTest {
                 .getResponse()
                 .getContentAsString();
         User createdUser = objectMapper.readValue(createdUserJson, User.class);
-        Assertions.assertNotNull(createdUser.getId());
+        Assertions.assertNotNull(createdUser.id());
         Assertions.assertTrue(createdUser.isPetsEmpty());
-        Assertions.assertEquals(newUser.getName(), createdUser.getName());
-        Assertions.assertEquals(newUser.getEmail(), createdUser.getEmail());
-        Assertions.assertEquals(newUser.getAge(), createdUser.getAge());
+        Assertions.assertEquals(newUser.name(), createdUser.name());
+        Assertions.assertEquals(newUser.email(), createdUser.email());
+        Assertions.assertEquals(newUser.age(), createdUser.age());
     }
 
     @Test
@@ -82,15 +82,15 @@ class UserControllerTest {
 
         User createdUser = objectMapper.readValue(createdUserJson, User.class);
 
-        Assertions.assertNotNull(createdUser.getId());
+        Assertions.assertNotNull(createdUser.id());
         Assertions.assertFalse(createdUser.isPetsEmpty());
-        Assertions.assertEquals(newUser.getName(), createdUser.getName());
-        Assertions.assertEquals(newUser.getEmail(), createdUser.getEmail());
-        Assertions.assertEquals(newUser.getAge(), createdUser.getAge());
-        Assertions.assertEquals(newUser.getPets().getFirst().getName(), createdUser.getPets().getFirst().getName());
-        Assertions.assertNotNull(createdUser.getPets().getFirst().getId());
-        Assertions.assertNotNull(createdUser.getPets().getFirst().getUserId());
-        Assertions.assertEquals(createdUser.getId(), createdUser.getPets().getFirst().getUserId());
+        Assertions.assertEquals(newUser.name(), createdUser.name());
+        Assertions.assertEquals(newUser.email(), createdUser.email());
+        Assertions.assertEquals(newUser.age(), createdUser.age());
+        Assertions.assertEquals(newUser.pets().getFirst().name(), createdUser.pets().getFirst().name());
+        Assertions.assertNotNull(createdUser.pets().getFirst().id());
+        Assertions.assertNotNull(createdUser.pets().getFirst().userId());
+        Assertions.assertEquals(createdUser.id(), createdUser.pets().getFirst().userId());
     }
 
     @Test
@@ -121,7 +121,7 @@ class UserControllerTest {
                         "test@test.ru",
                         35,
                         new ArrayList<>())
-        ).getId();
+        ).id();
 
         var userForNotExpected = new User(
                 userCreatedId,
@@ -150,10 +150,10 @@ class UserControllerTest {
 
         User updatedUser = objectMapper.readValue(jsonUpdatedUser, User.class);
         Assertions.assertTrue(updatedUser.isPetsEmpty());
-        Assertions.assertEquals(userForNotExpected.getId(), updatedUser.getId());
-        Assertions.assertNotEquals(userForNotExpected.getName(), updatedUser.getName());
-        Assertions.assertNotEquals(userForNotExpected.getEmail(), updatedUser.getEmail());
-        Assertions.assertNotEquals(userForNotExpected.getAge(), updatedUser.getAge());
+        Assertions.assertEquals(userForNotExpected.id(), updatedUser.id());
+        Assertions.assertNotEquals(userForNotExpected.name(), updatedUser.name());
+        Assertions.assertNotEquals(userForNotExpected.email(), updatedUser.email());
+        Assertions.assertNotEquals(userForNotExpected.age(), updatedUser.age());
     }
 
     @Test
@@ -165,7 +165,7 @@ class UserControllerTest {
                         "test@test.ru",
                         35,
                         new ArrayList<>())
-        ).getId();
+        ).id();
 
         var userForNotExpected = new User(
                 userCreatedId,
@@ -195,10 +195,10 @@ class UserControllerTest {
         User updatedUser = objectMapper.readValue(jsonUpdatedUser, User.class);
         Assertions.assertFalse(updatedUser.isPetsEmpty());
         Assertions.assertTrue(userForNotExpected.isPetsEmpty());
-        Assertions.assertEquals(userForNotExpected.getId(), updatedUser.getId());
-        Assertions.assertNotEquals(userForNotExpected.getName(), updatedUser.getName());
-        Assertions.assertNotEquals(userForNotExpected.getEmail(), updatedUser.getEmail());
-        Assertions.assertNotEquals(userForNotExpected.getAge(), updatedUser.getAge());
+        Assertions.assertEquals(userForNotExpected.id(), updatedUser.id());
+        Assertions.assertNotEquals(userForNotExpected.name(), updatedUser.name());
+        Assertions.assertNotEquals(userForNotExpected.email(), updatedUser.email());
+        Assertions.assertNotEquals(userForNotExpected.age(), updatedUser.age());
     }
 
     @Test
@@ -264,7 +264,7 @@ class UserControllerTest {
                                 List.of(new Pet(null, "cat", null))))
         );
 
-        mockMvc.perform(delete("/users/{id}", userForDelete.getId())
+        mockMvc.perform(delete("/users/{id}", userForDelete.id())
                         .contentType(MediaType.APPLICATION_JSON))
                         .andExpect(status().isNoContent());
     }
@@ -434,7 +434,7 @@ class UserControllerTest {
                                 List.of(new Pet(null, "cat", null))))
         );
 
-        String jsonFoundUser = mockMvc.perform(get("/users/{id}", userExpected.getId())
+        String jsonFoundUser = mockMvc.perform(get("/users/{id}", userExpected.id())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
