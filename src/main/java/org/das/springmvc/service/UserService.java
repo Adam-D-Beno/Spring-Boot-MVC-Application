@@ -41,8 +41,8 @@ public class UserService {
         return newUser;
     }
 
-    public void updateById(User userToUpdate) {
-        userMap.put(userToUpdate.id(), userToUpdate);
+    public User updateById(User userToUpdate) {
+       return userMap.put(userToUpdate.id(), userToUpdate);
     }
 
     public User updateById(Long id, User userToUpdate) {
@@ -75,9 +75,9 @@ public class UserService {
         return userToCreate;
     }
 
-    public void deleteById(Long id) {
+    public User deleteById(Long id) {
         LOGGER.info("execute method deleteById in UserService, id: id={}", id);
-        Optional.ofNullable(userMap.remove(id))
+       return Optional.ofNullable(userMap.remove(id))
                 .orElseThrow(() -> new NoSuchElementException("No such user with id=%s"
                         .formatted(id)));
     }
