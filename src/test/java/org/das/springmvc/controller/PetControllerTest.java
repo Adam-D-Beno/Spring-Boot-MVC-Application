@@ -62,6 +62,7 @@ class PetControllerTest {
         Pet petCreated = objectMapper.readValue(jsonPetCreated, Pet.class);
         User userFound = userService.findById(petCreated.userId());
 
+        org.junit.jupiter.api.Assertions.assertDoesNotThrow(() -> petService.findById(userFound.id()));
         org.junit.jupiter.api.Assertions.assertEquals(userFound.id(), petCreated.userId());
         org.junit.jupiter.api.Assertions.assertEquals(userFound.pets().getFirst().id(), petCreated.id());
         org.junit.jupiter.api.Assertions.assertEquals(userFound.pets().getFirst().name(), petCreated.name());
