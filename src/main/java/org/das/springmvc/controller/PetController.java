@@ -2,6 +2,8 @@ package org.das.springmvc.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import org.das.springmvc.dto.Mapper;
+import org.das.springmvc.dto.PetDto;
 import org.das.springmvc.model.Pet;
 import org.das.springmvc.model.User;
 import org.das.springmvc.service.PetService;
@@ -21,38 +23,44 @@ public class PetController {
     private final static Logger LOGGER = LoggerFactory.getLogger(PetController.class);
     private final PetService petService;
     private final UserService userService;
+    private final Mapper<Pet, PetDto> mapper;
 
     @Autowired
-    public PetController(PetService petService, UserService userService) {
+    public PetController(PetService petService,
+                         UserService userService,
+                         Mapper<Pet, PetDto> mapper) {
         this.petService = petService;
         this.userService = userService;
+        this.mapper = mapper;
     }
 
     @PostMapping()
-    public ResponseEntity<Pet> create(@RequestBody @Valid Pet petToCreate) {
-        LOGGER.info("Get request in PetController for created pet: pet={}", petToCreate);
-        Pet pet = petService.create(petToCreate);
-        if (!petToCreate.isUserIdEmpty()) {
-            User newUser = userService.findById(petToCreate.userId()).addPet(pet);
-            userService.updateById(newUser); // todo add update method
+    public ResponseEntity<PetDto> create(@RequestBody @Valid PetDto petDtoToCreate) {
+        LOGGER.info("Get request in PetController for created pet: pet={}", petDtoToCreate);
+
+        Pet pet = petService.create(mapper.toEntity(petDtoToCreate));
+        if (!(petDtoToCreate == null)) {
+            User newUser = userService.findById(petDtoToCreate.userId()).addPet(pet);
+            userService.updateById(newUser);
         }
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(pet);
+                .body(mapper.toDto(pet));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Pet> updateById(
+    public ResponseEntity<PetDto> updateById(
            @PathVariable("id") @NotNull Long id,
-           @RequestBody @Valid Pet petToUpdate) {
-        LOGGER.info("Get request in PetController update for pet with id: id={}, pet: pet={}", id, petToUpdate);
+           @RequestBody @Valid PetDto petDtoToUpdate) {
+        LOGGER.info("Get request in PetController update for pet with id: id={}, pet: pet={}", id, petDtoToUpdate);
+        Pet updatePet = petService.updateById(id, mapper.toEntity(petDtoToUpdate));
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(petService.updateById(id, petToUpdate));
+                .body(mapper.toDto(updatePet));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteById(@PathVariable("id") @NotNull Long id) {
+    public ResponseEntity<PetDto> deleteById(@PathVariable("id") @NotNull Long id) {
         LOGGER.info("Get request in PetController delete for pet with id: id={}", id);
         Pet pet = petService.deleteById(id);
         if (!pet.isUserIdEmpty()) {
@@ -63,11 +71,11 @@ public class PetController {
         }
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
-                .build();
+                .body(mapper.toDto(pet));
     }
 
     @GetMapping()
-    public ResponseEntity<List<Pet>> findAll(
+    public ResponseEntity<List<PetDto>> findAll(
            @RequestParam(value = "name", required = false) String name,
            @RequestParam(value = "userId", required = false) Long userId
     ) {
@@ -75,14 +83,14 @@ public class PetController {
                 , name, userId);
         return ResponseEntity
                 .status(HttpStatus.FOUND)
-                .body(petService.findAll(name, userId));
+                .body(mapper.toDto(petService.findAll(name, userId)));
     }
 
     @GetMapping("/pets/{id}")
-    public ResponseEntity<Pet> findById(@PathVariable("id") @NotNull Long id) {
+    public ResponseEntity<PetDto> findById(@PathVariable("id") @NotNull Long id) {
         LOGGER.info("Get request in PetController find for pet with id: id={}", id);
         return ResponseEntity
                 .status(HttpStatus.FOUND)
-                .body(petService.findById(id));
+                .body(mapper.toDto(petService.findById(id)));
     }
 }
