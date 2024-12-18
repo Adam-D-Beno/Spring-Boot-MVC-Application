@@ -3,6 +3,7 @@ package org.das.springmvc.controller;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.das.springmvc.model.Pet;
+import org.das.springmvc.model.User;
 import org.das.springmvc.service.PetService;
 import org.das.springmvc.service.UserService;
 import org.slf4j.Logger;
@@ -57,7 +58,8 @@ public class PetController {
         if (!pet.isUserIdEmpty()) {
             LOGGER.info("execute method findById and removePet in UserService, userId: id={}, pet: pet={}"
                     ,id ,pet);
-            userService.findById(pet.userId()).removePet(pet);
+            User newUser = userService.findById(pet.userId()).removePet(pet);
+            userService.updateById(newUser);
         }
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
