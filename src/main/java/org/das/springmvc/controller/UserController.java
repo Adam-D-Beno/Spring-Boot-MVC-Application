@@ -28,10 +28,9 @@ public class UserController {
     @PostMapping()
     public ResponseEntity<User> create(@RequestBody @Valid User userToCreate) {
         LOGGER.info("Get request in UserController for created user: user={}", userToCreate);
-        User user = userService.create(userToCreate);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(user);
+                .body(userService.create(userToCreate));
     }
 
     @PutMapping("/{id}")
@@ -40,19 +39,17 @@ public class UserController {
            @RequestBody @Valid User userToUpdate) {
         LOGGER.info("Get request in UserController update for user with id: id={}, user: user={}"
                 ,id ,userToUpdate);
-        User user = userService.updateById(id, userToUpdate);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(user);
+                .body(userService.updateById(id, userToUpdate));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteById(@PathVariable("id") @NotNull Long id) {
+    public ResponseEntity<User> deleteById(@PathVariable("id") @NotNull Long id) {
         LOGGER.info("Get request in UserController delete for user with id: id={}", id);
-        userService.deleteById(id);
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
-                .build();
+                .body(userService.deleteById(id));
     }
 
     @GetMapping()
@@ -62,10 +59,9 @@ public class UserController {
     ) {
         LOGGER.info("Get request in UserController findAll for user with name: name={}, email: email={}"
                 ,name ,email);
-        List<User> users = userService.findAll(name, email);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(users);
+                .body(userService.findAll(name, email));
     }
 
     @GetMapping("/{id}")
