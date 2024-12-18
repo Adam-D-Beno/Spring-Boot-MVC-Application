@@ -273,7 +273,7 @@ class UserControllerTest {
 
         mockMvc.perform(delete("/users/{id}", userForDelete.id())
                         .contentType(MediaType.APPLICATION_JSON))
-                        .andExpect(status().isNoContent());
+                        .andExpect(status().isOk());
         Assertions.assertThrows(java.util.NoSuchElementException.class,
                 () ->userService.findById(userForDelete.id())
         );
