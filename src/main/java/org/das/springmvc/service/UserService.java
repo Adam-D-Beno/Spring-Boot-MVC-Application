@@ -42,6 +42,10 @@ public class UserService {
         return newUser;
     }
 
+    public void updateById(User userToUpdate) {
+        userMap.put(userToUpdate.id(), userToUpdate);
+    }
+
     public User updateById(Long id, User userToUpdate) {
         LOGGER.info("execute method updateById in UserService, user: user={} and id: id={}", userToUpdate, id);
         User user = Optional.ofNullable(userMap.get(id))
