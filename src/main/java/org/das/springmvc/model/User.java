@@ -32,7 +32,11 @@ public class User {
 
     private List<Pet> pets;
 
-    public User(Long id, String name, String email, Integer age, List<Pet> pets) {
+    public User(Long id,
+                String name,
+                String email,
+                Integer age,
+                List<Pet> pets) {
         this.id = id;
         this.name = name;
         this.email = email;
