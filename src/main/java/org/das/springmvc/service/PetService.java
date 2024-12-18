@@ -1,6 +1,5 @@
 package org.das.springmvc.service;
 
-
 import org.das.springmvc.model.Pet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +56,6 @@ public class PetService {
     }
 
     public Pet deleteById(Long id) {
-
         LOGGER.info("execute method deleteById in PetService, PetId: id={}", id);
         return Optional.ofNullable(petMap.remove(id))
                 .orElseThrow(() -> new NoSuchElementException("No such pet with id=%s"
