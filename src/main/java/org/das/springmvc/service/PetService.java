@@ -6,22 +6,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 //todo export in main branch
 @Service
 public class PetService {
 
     private final Map<Long, Pet> petMap;
-    private Long idPetCounter;
+    private final AtomicLong idPetCounter;
     private final static Logger LOGGER = LoggerFactory.getLogger(PetService.class);
 
     public PetService() {
         this.petMap = new HashMap<>();
-        this.idPetCounter = 0L;
+        this.idPetCounter = new AtomicLong();
     }
 
     public Pet create(Pet petToCreate) {
-        var newPetId = ++idPetCounter;
+        var newPetId = idPetCounter.incrementAndGet();
         LOGGER.info("execute method Create in PetService, pet: pet={} and id: id={}", petToCreate, newPetId);
         var newPet = new Pet(
                 newPetId, petToCreate.name(), petToCreate.userId()
@@ -34,7 +35,7 @@ public class PetService {
     public List<Pet> create(List<Pet> pets, Long userId) {
         LOGGER.info("execute method Create in PetService, pets: pets={}", pets);
         return pets.stream()
-                .map(pet -> new Pet(++idPetCounter, pet.name(), userId))
+                .map(pet -> new Pet(idPetCounter.incrementAndGet(), pet.name(), userId))
                 .peek(pet -> this.petMap.put(pet.id(), pet))
                 .toList();
     }
