@@ -33,7 +33,8 @@ public class PetController {
         LOGGER.info("Get request in PetController for created pet: pet={}", petToCreate);
         Pet pet = petService.create(petToCreate);
         if (!petToCreate.isUserIdEmpty()) {
-            userService.findById(petToCreate.userId()).addPet(pet);
+            User newUser = userService.findById(petToCreate.userId()).addPet(pet);
+            userService.updateById(newUser);
         }
         return ResponseEntity
                 .status(HttpStatus.CREATED)
