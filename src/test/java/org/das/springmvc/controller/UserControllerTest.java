@@ -14,13 +14,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.web.servlet.function.RequestPredicates.param;
+
 //todo export in main branch
 @AutoConfigureMockMvc
 @SpringBootTest
@@ -52,6 +51,8 @@ class UserControllerTest {
                 .getResponse()
                 .getContentAsString();
         User createdUser = objectMapper.readValue(createdUserJson, User.class);
+
+        org.junit.jupiter.api.Assertions.assertDoesNotThrow(() -> userService.findById(createdUser.id()));
         Assertions.assertNotNull(createdUser.id());
         Assertions.assertTrue(createdUser.isPetsEmpty());
         Assertions.assertEquals(newUser.name(), createdUser.name());
@@ -82,6 +83,7 @@ class UserControllerTest {
 
         User createdUser = objectMapper.readValue(createdUserJson, User.class);
 
+        org.junit.jupiter.api.Assertions.assertDoesNotThrow(() -> userService.findById(createdUser.id()));
         Assertions.assertNotNull(createdUser.id());
         Assertions.assertFalse(createdUser.isPetsEmpty());
         Assertions.assertEquals(newUser.name(), createdUser.name());
@@ -149,6 +151,8 @@ class UserControllerTest {
                 .getContentAsString();
 
         User updatedUser = objectMapper.readValue(jsonUpdatedUser, User.class);
+
+        org.junit.jupiter.api.Assertions.assertDoesNotThrow(() -> userService.findById(updatedUser.id()));
         Assertions.assertTrue(updatedUser.isPetsEmpty());
         Assertions.assertEquals(userForNotExpected.id(), updatedUser.id());
         Assertions.assertNotEquals(userForNotExpected.name(), updatedUser.name());
@@ -193,6 +197,8 @@ class UserControllerTest {
                 .getContentAsString();
 
         User updatedUser = objectMapper.readValue(jsonUpdatedUser, User.class);
+
+        org.junit.jupiter.api.Assertions.assertDoesNotThrow(() -> userService.findById(updatedUser.id()));
         Assertions.assertFalse(updatedUser.isPetsEmpty());
         Assertions.assertTrue(userForNotExpected.isPetsEmpty());
         Assertions.assertEquals(userForNotExpected.id(), updatedUser.id());
@@ -250,6 +256,7 @@ class UserControllerTest {
                     throw noSuchElementException;
                 }
         );
+
     }
 
     @Test
