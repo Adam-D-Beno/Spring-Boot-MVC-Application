@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.*;
 
+
 @Service
 public class UserService {
 
@@ -29,12 +30,12 @@ public class UserService {
 
         List<Pet> pets = userToCreate.isPetsEmpty()
                 ? new ArrayList<>()
-                : petService.create(userToCreate.getPets(), newUserId);
+                : petService.create(userToCreate.pets(), newUserId);
         var newUser = new User(
                 idUserCounter,
-                userToCreate.getName(),
-                userToCreate.getEmail(),
-                userToCreate.getAge(),
+                userToCreate.name(),
+                userToCreate.email(),
+                userToCreate.age(),
                 pets
         );
         this.userMap.put(newUserId, newUser);
@@ -47,19 +48,28 @@ public class UserService {
                 .orElseThrow(() -> new NoSuchElementException("No such user with id=%s"
                         .formatted(id)));
 
+        User userToCreate;
         if (userToUpdate.isPetsEmpty()) {
-            user.setName(userToUpdate.getName());
-            user.setEmail(userToUpdate.getEmail());
-            user.setAge(userToUpdate.getAge());
+            userToCreate = new User (
+                    user.id(),
+                    userToUpdate.name(),
+                    userToUpdate.email(),
+                    userToUpdate.age(),
+                    new ArrayList<>()
+            );
         } else {
-            List<Pet> pets = petService.create(userToUpdate.getPets(), user.getId());
-            user.setName(userToUpdate.getName());
-            user.setEmail(userToUpdate.getEmail());
-            user.setAge(userToUpdate.getAge());
-            user.addPets(pets);
+            List<Pet> pets = petService.create(userToUpdate.pets(), user.id());
+             User tmpUser = new User (
+                    user.id(),
+                    userToUpdate.name(),
+                    userToUpdate.email(),
+                    userToUpdate.age(),
+                    pets
+            );
+            userToCreate = tmpUser.addPets(user.pets());
         }
-        userMap.put(id, user);
-        return user;
+        userMap.put(id, userToCreate);
+        return userToCreate;
     }
 
     public void deleteById(Long id) {
@@ -74,8 +84,8 @@ public class UserService {
                 ,name ,email);
         List<User> users = userMap.values()
                 .stream()
-                .filter(user -> Objects.isNull(name) || user.getName().equals(name))
-                .filter(user -> Objects.isNull(email) || user.getEmail().equals(email))
+                .filter(user -> Objects.isNull(name) || user.name().equals(name))
+                .filter(user -> Objects.isNull(email) || user.email().equals(email))
                 .toList();
         if (users.isEmpty()) {
             throw new NoSuchElementException("No such users = %s parameter: name = %s, email = %s"

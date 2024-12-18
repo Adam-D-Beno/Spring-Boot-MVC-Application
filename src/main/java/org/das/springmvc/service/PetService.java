@@ -5,9 +5,9 @@ import org.das.springmvc.model.Pet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
 import java.util.*;
 
+//todo export in main branch
 @Service
 public class PetService {
 
@@ -24,7 +24,7 @@ public class PetService {
         var newPetId = ++idPetCounter;
         LOGGER.info("execute method Create in PetService, pet: pet={} and id: id={}", petToCreate, newPetId);
         var newPet = new Pet(
-                newPetId, petToCreate.getName(), petToCreate.getUserId()
+                newPetId, petToCreate.name(), petToCreate.userId()
         );
         this.petMap.put(newPetId, newPet);
         return newPet;
@@ -34,8 +34,8 @@ public class PetService {
     public List<Pet> create(List<Pet> pets, Long userId) {
         LOGGER.info("execute method Create in PetService, pets: pets={}", pets);
         return pets.stream()
-                .map(pet -> new Pet(++idPetCounter, pet.getName(), userId))
-                .peek(pet -> this.petMap.put(pet.getId(), pet))
+                .map(pet -> new Pet(++idPetCounter, pet.name(), userId))
+                .peek(pet -> this.petMap.put(pet.id(), pet))
                 .toList();
     }
 
@@ -45,10 +45,13 @@ public class PetService {
                 .orElseThrow(() -> new NoSuchElementException("No such pet with id=%s"
                         .formatted(id)));
 
-        pet.setName(petToUpdate.getName());
-        pet.setUserId(petToUpdate.getUserId());
+        Pet newPet = new Pet(
+                pet.id(),
+                petToUpdate.name(),
+                petToUpdate.userId()
+        );
 
-        petMap.put(id, pet);
+        petMap.put(id, newPet);
         return pet;
     }
 
@@ -65,8 +68,8 @@ public class PetService {
                 , name, userId);
         return petMap.values()
                 .stream()
-                .filter(pet -> Objects.isNull(name) || pet.getName().equals(name))
-                .filter(pet -> Objects.isNull(userId) || pet.getUserId().equals(userId))
+                .filter(pet -> Objects.isNull(name) || pet.name().equals(name))
+                .filter(pet -> Objects.isNull(userId) || pet.userId().equals(userId))
                 .toList();
     }
 
