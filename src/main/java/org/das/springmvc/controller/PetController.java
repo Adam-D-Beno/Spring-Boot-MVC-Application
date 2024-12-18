@@ -70,7 +70,7 @@ public class PetController {
             userService.updateById(newUser);
         }
         return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
+                .status(HttpStatus.OK)
                 .body(mapper.toDto(pet));
     }
 
