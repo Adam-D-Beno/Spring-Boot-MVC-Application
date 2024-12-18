@@ -11,9 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
+@RequestMapping("/pets")
 @RestController
 public class PetController {
     private final static Logger LOGGER = LoggerFactory.getLogger(PetController.class);
@@ -26,7 +26,7 @@ public class PetController {
         this.userService = userService;
     }
 
-    @PostMapping("/pets")
+    @PostMapping()
     public ResponseEntity<Pet> create(@RequestBody @Valid Pet petToCreate) {
         LOGGER.info("Get request in PetController for created pet: pet={}", petToCreate);
         Pet pet = petService.create(petToCreate);
@@ -38,9 +38,9 @@ public class PetController {
                 .body(pet);
     }
 
-    @PutMapping("/pets/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Pet> updateById(
-           @PathVariable @NotNull Long id,
+           @PathVariable("id") @NotNull Long id,
            @RequestBody @Valid Pet petToUpdate) {
         LOGGER.info("Get request in PetController update for pet with id: id={}, pet: pet={}", id, petToUpdate);
         Pet updatedPet = petService.updateById(id, petToUpdate);
@@ -49,8 +49,8 @@ public class PetController {
                 .body(updatedPet);
     }
 
-    @DeleteMapping("/pets/{id}")
-    public ResponseEntity<Void> deleteById(@PathVariable @NotNull Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable("id") @NotNull Long id) {
         LOGGER.info("Get request in PetController delete for pet with id: id={}", id);
         Pet pet = petService.deleteById(id);
         if (!pet.isUserIdEmpty()) {
@@ -63,7 +63,7 @@ public class PetController {
                 .build();
     }
 
-    @GetMapping("/pets")
+    @GetMapping()
     public ResponseEntity<List<Pet>> findAll(
            @RequestParam(value = "name", required = false) String name,
            @RequestParam(value = "userId", required = false) Long userId
@@ -77,7 +77,7 @@ public class PetController {
     }
 
     @GetMapping("/pets/{id}")
-    public ResponseEntity<Pet> findById(@PathVariable @NotNull Long id) {
+    public ResponseEntity<Pet> findById(@PathVariable("id") @NotNull Long id) {
         LOGGER.info("Get request in PetController find for pet with id: id={}", id);
         Pet pet = petService.findById(id);
         return ResponseEntity
