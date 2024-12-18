@@ -46,10 +46,9 @@ public class PetController {
            @PathVariable("id") @NotNull Long id,
            @RequestBody @Valid Pet petToUpdate) {
         LOGGER.info("Get request in PetController update for pet with id: id={}, pet: pet={}", id, petToUpdate);
-        Pet updatedPet = petService.updateById(id, petToUpdate);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(updatedPet);
+                .body(petService.updateById(id, petToUpdate));
     }
 
     @DeleteMapping("/{id}")
@@ -74,18 +73,16 @@ public class PetController {
     ) {
         LOGGER.info("Get request in PetController findAll for pet with name: name={}, userId: userId={}"
                 , name, userId);
-        List<Pet> pets = petService.findAll(name, userId);
         return ResponseEntity
                 .status(HttpStatus.FOUND)
-                .body(pets);
+                .body(petService.findAll(name, userId));
     }
 
     @GetMapping("/pets/{id}")
     public ResponseEntity<Pet> findById(@PathVariable("id") @NotNull Long id) {
         LOGGER.info("Get request in PetController find for pet with id: id={}", id);
-        Pet pet = petService.findById(id);
         return ResponseEntity
                 .status(HttpStatus.FOUND)
-                .body(pet);
+                .body(petService.findById(id));
     }
 }
