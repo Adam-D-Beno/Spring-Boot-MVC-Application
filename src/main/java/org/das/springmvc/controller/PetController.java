@@ -34,7 +34,7 @@ public class PetController {
         Pet pet = petService.create(petToCreate);
         if (!petToCreate.isUserIdEmpty()) {
             User newUser = userService.findById(petToCreate.userId()).addPet(pet);
-            userService.updateById(newUser);
+            userService.updateById(newUser); // todo add update method
         }
         return ResponseEntity
                 .status(HttpStatus.CREATED)
