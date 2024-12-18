@@ -1,7 +1,5 @@
 package org.das.springmvc.service;
 
-import org.das.springmvc.dto.Mapper;
-import org.das.springmvc.dto.UserDto;
 import org.das.springmvc.model.Pet;
 import org.das.springmvc.model.User;
 import org.slf4j.Logger;
@@ -15,7 +13,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class UserService {
 
     private final Map<Long, User> userMap;
-    private AtomicLong idUserCounter;
+    private final AtomicLong idUserCounter;
     private final PetService petService;
     private final static Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 
