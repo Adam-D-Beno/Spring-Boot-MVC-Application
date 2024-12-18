@@ -45,7 +45,7 @@ public class UserController {
            @RequestBody @Valid UserDto userDtoToUpdate) {
         LOGGER.info("Get request in UserController update for user with id: id={}, user: user={}"
                 ,id ,userDtoToUpdate);
-        User updateUser = userService.create(mapper.toEntity(userDtoToUpdate));
+        User updateUser = userService.updateById(id, mapper.toEntity(userDtoToUpdate));
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(mapper.toDto(updateUser));
