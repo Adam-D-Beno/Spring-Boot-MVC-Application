@@ -10,9 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
+@RequestMapping("/users")
 @RestController
 public class UserController {
 
@@ -24,7 +24,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/users")
+    @PostMapping()
     public ResponseEntity<User> create(@RequestBody @Valid User userToCreate) {
         LOGGER.info("Get request in UserController for created user: user={}", userToCreate);
         User user = userService.create(userToCreate);
@@ -33,9 +33,9 @@ public class UserController {
                 .body(user);
     }
 
-    @PutMapping("/users/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<User> updateById(
-           @PathVariable @NotNull Long id,
+           @PathVariable("id") @NotNull Long id,
            @RequestBody @Valid User userToUpdate) {
         LOGGER.info("Get request in UserController update for user with id: id={}, user: user={}"
                 ,id ,userToUpdate);
@@ -45,8 +45,8 @@ public class UserController {
                 .body(user);
     }
 
-    @DeleteMapping("/users/{id}")
-    public ResponseEntity<Void> deleteById(@PathVariable @NotNull Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable("id") @NotNull Long id) {
         LOGGER.info("Get request in UserController delete for user with id: id={}", id);
         userService.deleteById(id);
         return ResponseEntity
@@ -54,7 +54,7 @@ public class UserController {
                 .build();
     }
 
-    @GetMapping("/users")
+    @GetMapping()
     public ResponseEntity<List<User>> findAll(
            @RequestParam(value = "name", required = false) String name,
            @RequestParam(value = "email", required = false) String email
@@ -67,8 +67,8 @@ public class UserController {
                 .body(users);
     }
 
-    @GetMapping("/users/{id}")
-    public ResponseEntity<User> findById(@PathVariable @NotNull Long id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<User> findById(@PathVariable("id") @NotNull Long id) {
         LOGGER.info("Get request in UserController find for user with id: id={}", id);
         User user = userService.findById(id);
         return ResponseEntity
