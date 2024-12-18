@@ -55,7 +55,7 @@ public class UserController {
     public ResponseEntity<UserDto> deleteById(@PathVariable("id") @NotNull Long id) {
         LOGGER.info("Get request in UserController delete for user with id: id={}", id);
         return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
+                .status(HttpStatus.OK)
                 .body(mapper.toDto(userService.deleteById(id)));
     }
 
