@@ -66,7 +66,6 @@ public class UserController {
     ) {
         LOGGER.info("Get request in UserController findAll for user with name: name={}, email: email={}"
                 ,name ,email);
-        ;
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(mapper.toDto(userService.findAll(name, email)));
