@@ -7,12 +7,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 public class UserService {
 
     private final Map<Long, User> userMap;
-    private Long idUserCounter;
+    private AtomicLong idUserCounter;
     private final PetService petService;
     private final static Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 
@@ -20,18 +21,18 @@ public class UserService {
     public UserService(PetService petService) {
         this.petService = petService;
         this.userMap = new HashMap<>();
-        this.idUserCounter = 0L;
+        this.idUserCounter = new AtomicLong();
     }
 
     public User create(User userToCreate) {
-        var newUserId = ++idUserCounter;
+        var newUserId = idUserCounter.incrementAndGet();
         LOGGER.info("execute method Create in UserService, user: user={} and id: id={}", userToCreate, newUserId);
 
         List<Pet> pets = userToCreate.isPetsEmpty()
                 ? new ArrayList<>()
                 : petService.create(userToCreate.pets(), newUserId);
         var newUser = new User(
-                idUserCounter,
+                newUserId,
                 userToCreate.name(),
                 userToCreate.email(),
                 userToCreate.age(),
