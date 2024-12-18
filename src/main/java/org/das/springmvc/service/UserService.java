@@ -1,5 +1,7 @@
 package org.das.springmvc.service;
 
+import org.das.springmvc.dto.Mapper;
+import org.das.springmvc.dto.UserDto;
 import org.das.springmvc.model.Pet;
 import org.das.springmvc.model.User;
 import org.slf4j.Logger;
@@ -28,9 +30,10 @@ public class UserService {
         var newUserId = idUserCounter.incrementAndGet();
         LOGGER.info("execute method Create in UserService, user: user={} and id: id={}", userToCreate, newUserId);
 
-        List<Pet> pets = userToCreate.isPetsEmpty()
-                ? new ArrayList<>()
-                : petService.create(userToCreate.pets(), newUserId);
+        List<Pet> pets = new ArrayList<>();
+        if (!userToCreate.isPetsEmpty()) {
+            pets = petService.create(userToCreate.pets(), newUserId);
+        }
         var newUser = new User(
                 newUserId,
                 userToCreate.name(),
