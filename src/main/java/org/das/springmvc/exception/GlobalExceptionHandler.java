@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.method.MethodValidationException;
 import org.springframework.validation.method.ParameterErrors;
@@ -54,6 +55,21 @@ public class GlobalExceptionHandler {
                         error.getField(), error.getDefaultMessage(), error.getRejectedValue()))
                 .collect(Collectors.joining(", "));
 
+        var errorDto = new ErrorMessageResponse(
+                "Ошибка валидации запроса",
+                detailMessage,
+                LocalDateTime.now()
+        );
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(errorDto);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorMessageResponse> HandlerHttpMessageNotReadableException(
+            HttpMessageNotReadableException e) {
+        LOGGER.error("Got validation exception: HttpMessageNotReadableException", e);
+        String detailMessage = "Body must be is not null";
         var errorDto = new ErrorMessageResponse(
                 "Ошибка валидации запроса",
                 detailMessage,
