@@ -40,7 +40,7 @@ public class PetController {
         LOGGER.info("Get request in PetController for created pet: pet={}", petDtoToCreate);
 
         Pet pet = petService.create(mapper.toEntity(petDtoToCreate));
-        if (!(petDtoToCreate == null)) {
+        if (petDtoToCreate.userId() != null) {
             User newUser = userService.findById(petDtoToCreate.userId()).addPet(pet);
             userService.updateById(newUser);
         }
