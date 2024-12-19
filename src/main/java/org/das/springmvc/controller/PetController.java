@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class PetController {
     }
 
     @PostMapping()
-    public ResponseEntity<PetDto> create(@RequestBody @Valid PetDto petDtoToCreate) {
+    public ResponseEntity<PetDto> create(@RequestBody @Validated PetDto petDtoToCreate) {
         LOGGER.info("Get request in PetController for created pet: pet={}", petDtoToCreate);
 
         Pet pet = petService.create(mapper.toEntity(petDtoToCreate));
@@ -51,7 +52,7 @@ public class PetController {
     @PutMapping("/{id}")
     public ResponseEntity<PetDto> updateById(
            @PathVariable("id") @NotNull Long id,
-           @RequestBody @Valid PetDto petDtoToUpdate) {
+           @RequestBody @Validated PetDto petDtoToUpdate) {
         LOGGER.info("Get request in PetController update for pet with id: id={}, pet: pet={}", id, petDtoToUpdate);
         Pet updatePet = petService.updateById(id, mapper.toEntity(petDtoToUpdate));
         return ResponseEntity

@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class UserController {
     }
 
     @PostMapping()
-    public ResponseEntity<UserDto> create(@RequestBody @Valid UserDto userDtoToCreate) {
+    public ResponseEntity<UserDto> create(@RequestBody @Validated UserDto userDtoToCreate) {
         LOGGER.info("Get request in UserController for created user: user={}", userDtoToCreate);
         User saveUser = userService.create(mapper.toEntity(userDtoToCreate));
         return ResponseEntity
@@ -42,7 +43,7 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<UserDto> updateById(
            @PathVariable("id") @NotNull Long id,
-           @RequestBody @Valid UserDto userDtoToUpdate) {
+           @RequestBody @Validated UserDto userDtoToUpdate) {
         LOGGER.info("Get request in UserController update for user with id: id={}, user: user={}"
                 ,id ,userDtoToUpdate);
         User updateUser = userService.updateById(id, mapper.toEntity(userDtoToUpdate));
