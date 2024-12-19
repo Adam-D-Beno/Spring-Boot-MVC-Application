@@ -6,7 +6,7 @@ package org.das.springmvc.dto;
 import jakarta.validation.constraints.*;
 
 public record PetDto(
-        @Null(message = "Filed user id must be null")
+
         Long id,
 
         @Size(max = 50, message = "Filed size user name must be max=50")
