@@ -30,7 +30,6 @@ public class PetService {
         return newPet;
     }
 
-    //todo check exist user
     public List<Pet> create(List<Pet> pets, Long userId) {
         LOGGER.info("execute method Create in PetService, pets: pets={}", pets);
         return pets.stream()
@@ -55,6 +54,22 @@ public class PetService {
         return pet;
     }
 
+
+    public List<Pet> updateById(List<Pet> petsToUpdate) {
+        LOGGER.info("execute method updateById in PetService, pets: pets={}", petsToUpdate);
+        List<Pet> pets = petsToUpdate.stream()
+                .filter(pet -> petMap.containsKey(pet.id()))
+                .filter(pet -> pet.userId() != null)
+                .peek(pet -> petMap.put(pet.id(), pet))
+//                .map(pet -> petMap.put(pet.id(), pet)) // .peek(pet -> petMap.put(pet.id(), pet))
+                .toList();
+        if (pets.isEmpty()) {
+          throw new NoSuchElementException("No exist List pets = %s"
+                  .formatted(petsToUpdate));
+        }
+        return pets;
+    }
+
     public Pet deleteById(Long id) {
         LOGGER.info("execute method deleteById in PetService, PetId: id={}", id);
         return Optional.ofNullable(petMap.remove(id))
@@ -64,7 +79,8 @@ public class PetService {
 
     public void deleteById(List<Pet> pets) {
         LOGGER.info("execute method deleteById in PetService, Pets: pets={}", pets);
-        pets.stream().filter(pet -> pet.userId() != null)
+        pets.stream()
+                .filter(pet -> pet.userId() != null)
                 .forEach(pet -> petMap.remove(pet.id()));
     }
 
