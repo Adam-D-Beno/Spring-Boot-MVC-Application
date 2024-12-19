@@ -1,8 +1,5 @@
 package org.das.springmvc.dto;
 
-
-//todo export in main branch
-
 import jakarta.validation.constraints.*;
 
 public record PetDto(

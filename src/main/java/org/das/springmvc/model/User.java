@@ -16,7 +16,6 @@ public record User(
         return pets == null || pets.isEmpty();
     }
 
-    //todo change all equals pets // в этом фрагмент идет за дублирование pet объектов при обновлении
     public User addPet(Pet pet) {
         if (pet == null) {
             return this;
@@ -26,7 +25,6 @@ public record User(
         return new User(id, name, email, age, List.copyOf(newPets));
     }
 
-    //todo change all equals pets // в этом фрагмент идет за дублирование pet объектов при обновлении
     public User addPets(List<Pet> petsToAdd) {
         if (petsToAdd == null || petsToAdd.isEmpty()) {
             return this;

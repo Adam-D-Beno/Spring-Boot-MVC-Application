@@ -1,6 +1,5 @@
 package org.das.springmvc.controller;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.das.springmvc.dto.Mapper;
 import org.das.springmvc.dto.PetDto;
@@ -17,7 +16,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
-//todo export in main branch
 @RequestMapping("/pets")
 @RestController
 public class PetController {
