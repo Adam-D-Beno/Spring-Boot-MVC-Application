@@ -69,7 +69,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorMessageResponse> HandlerHttpMessageNotReadableException(
             HttpMessageNotReadableException e) {
         LOGGER.error("Got validation exception: HttpMessageNotReadableException", e);
-        String detailMessage = "Body must be is not null";
+        String detailMessage = "Body must not be is null";
         var errorDto = new ErrorMessageResponse(
                 "Ошибка валидации запроса",
                 detailMessage,
