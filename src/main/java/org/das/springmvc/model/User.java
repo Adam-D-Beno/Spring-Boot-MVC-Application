@@ -42,4 +42,12 @@ public record User(
 
         return new User(id, name, email, age, List.copyOf(newPets));
     }
+
+    public User removePets(List<Pet> petsToRemove) {
+        List<Pet> updatedPets = new ArrayList<>(pets);
+        petsToRemove.forEach(petToRemove ->
+                updatedPets.removeIf(currentPet -> currentPet.id().equals(petToRemove.id()))
+        );
+        return new User(id, name, email, age, List.copyOf(updatedPets));
+    }
 }
