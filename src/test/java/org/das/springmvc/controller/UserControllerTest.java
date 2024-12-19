@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import java.util.ArrayList;
 import java.util.List;
@@ -187,7 +188,7 @@ class UserControllerTest {
                 "testUpdate",
                 "testUpdate@test.ru",
                 45,
-                new ArrayList<>(List.of(newPet))
+                List.of(newPet)
         );
         String jsonForUpdateUser = objectMapper.writeValueAsString(userForUpdate);
 
@@ -212,25 +213,25 @@ class UserControllerTest {
 
     @Test
     void shouldNotUpdateUserWhenRequestInvalid() throws Exception {
+        Pet newPet = petService.create(new Pet(null, "cat", 1L));
         var invalidUser = new User(
                 null,
                 null,
                 "test@test.ru",
                 35,
-                new ArrayList<>(
-                        List.of(new Pet(null, "cat", null)))
+                List.of(newPet)
         );
         Long userIdForUpdate = 1L;
         String jsonUserForUpdate = objectMapper.writeValueAsString(invalidUser);
-        Exception HandlerMethodValidationException = mockMvc.perform(put("/users/{id}", userIdForUpdate)
+        Exception methodArgumentNotValidException = mockMvc.perform(put("/users/{id}", userIdForUpdate)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUserForUpdate))
                 .andExpect(status().isBadRequest())
                 .andReturn().getResolvedException();
-        Assertions.assertThrows(HandlerMethodValidationException.class,
+        Assertions.assertThrows(MethodArgumentNotValidException.class,
                 () -> {
-                    assert HandlerMethodValidationException != null;
-                    throw HandlerMethodValidationException;
+                    assert methodArgumentNotValidException != null;
+                    throw methodArgumentNotValidException;
                 }
         );
     }
