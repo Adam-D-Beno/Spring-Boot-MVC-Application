@@ -7,7 +7,7 @@ import java.util.Objects;
 
 public class Pet {
         @Null(message = "Filed user id must be null")
-       private Long id;
+        private Long id;
 
         @Size(max = 50, message = "Filed size user name must be max=50")
         @NotBlank(message = "Filed user name must be not null or blank")
