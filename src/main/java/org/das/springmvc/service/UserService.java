@@ -60,18 +60,18 @@ public class UserService {
                     userToUpdate.name(),
                     userToUpdate.email(),
                     userToUpdate.age(),
-                    new ArrayList<>()
+                    List.of()
             );
         } else {
             List<Pet> pets = petService.updateById(userToUpdate.pets());
-             User tmpUser = new User (
+            User updateUser = user.removePets(pets).addPets(pets);
+            userToCreate = new User (
                     user.id(),
                     userToUpdate.name(),
                     userToUpdate.email(),
                     userToUpdate.age(),
-                    pets
+                    updateUser.pets()
             );
-            userToCreate = tmpUser.addPets(user.pets()); // todo check
         }
         userMap.put(id, userToCreate);
         return userToCreate;
