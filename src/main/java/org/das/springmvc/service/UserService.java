@@ -7,12 +7,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 public class UserService {
 
     private final Map<Long, User> userMap;
-    private Long idUserCounter;
+    private final AtomicLong idUserCounter;
     private final PetService petService;
     private final static Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 
@@ -20,25 +21,30 @@ public class UserService {
     public UserService(PetService petService) {
         this.petService = petService;
         this.userMap = new HashMap<>();
-        this.idUserCounter = 0L;
+        this.idUserCounter = new AtomicLong();
     }
 
     public User create(User userToCreate) {
-        var newUserId = ++idUserCounter;
+        var newUserId = idUserCounter.incrementAndGet();
         LOGGER.info("execute method Create in UserService, user: user={} and id: id={}", userToCreate, newUserId);
 
-        List<Pet> pets = userToCreate.isPetsEmpty()
-                ? new ArrayList<>()
-                : petService.create(userToCreate.getPets(), newUserId);
+        List<Pet> pets = new ArrayList<>();
+        if (!userToCreate.isPetsEmpty()) {
+            pets = petService.create(userToCreate.pets(), newUserId);
+        }
         var newUser = new User(
-                idUserCounter,
-                userToCreate.getName(),
-                userToCreate.getEmail(),
-                userToCreate.getAge(),
+                newUserId,
+                userToCreate.name(),
+                userToCreate.email(),
+                userToCreate.age(),
                 pets
         );
         this.userMap.put(newUserId, newUser);
         return newUser;
+    }
+
+    public User updateById(User userToUpdate) {
+       return userMap.put(userToUpdate.id(), userToUpdate);
     }
 
     public User updateById(Long id, User userToUpdate) {
@@ -47,24 +53,33 @@ public class UserService {
                 .orElseThrow(() -> new NoSuchElementException("No such user with id=%s"
                         .formatted(id)));
 
+        User userToCreate;
         if (userToUpdate.isPetsEmpty()) {
-            user.setName(userToUpdate.getName());
-            user.setEmail(userToUpdate.getEmail());
-            user.setAge(userToUpdate.getAge());
+            userToCreate = new User (
+                    user.id(),
+                    userToUpdate.name(),
+                    userToUpdate.email(),
+                    userToUpdate.age(),
+                    List.of()
+            );
         } else {
-            List<Pet> pets = petService.create(userToUpdate.getPets(), user.getId());
-            user.setName(userToUpdate.getName());
-            user.setEmail(userToUpdate.getEmail());
-            user.setAge(userToUpdate.getAge());
-            user.addPets(pets);
+            List<Pet> pets = petService.updateById(userToUpdate.pets());
+            User updateUser = user.removePets(pets).addPets(pets);
+            userToCreate = new User (
+                    user.id(),
+                    userToUpdate.name(),
+                    userToUpdate.email(),
+                    userToUpdate.age(),
+                    updateUser.pets()
+            );
         }
-        userMap.put(id, user);
-        return user;
+        userMap.put(id, userToCreate);
+        return userToCreate;
     }
 
-    public void deleteById(Long id) {
+    public User deleteById(Long id) {
         LOGGER.info("execute method deleteById in UserService, id: id={}", id);
-        Optional.ofNullable(userMap.remove(id))
+       return Optional.ofNullable(userMap.remove(id))
                 .orElseThrow(() -> new NoSuchElementException("No such user with id=%s"
                         .formatted(id)));
     }
@@ -74,8 +89,8 @@ public class UserService {
                 ,name ,email);
         List<User> users = userMap.values()
                 .stream()
-                .filter(user -> Objects.isNull(name) || user.getName().equals(name))
-                .filter(user -> Objects.isNull(email) || user.getEmail().equals(email))
+                .filter(user -> Objects.isNull(name) || user.name().equals(name))
+                .filter(user -> Objects.isNull(email) || user.email().equals(email))
                 .toList();
         if (users.isEmpty()) {
             throw new NoSuchElementException("No such users = %s parameter: name = %s, email = %s"

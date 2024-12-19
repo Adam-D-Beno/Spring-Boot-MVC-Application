@@ -4,23 +4,25 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.das.springmvc.model.Pet;
 import org.das.springmvc.model.User;
+import org.das.springmvc.service.PetService;
 import org.das.springmvc.service.UserService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import java.util.ArrayList;
 import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
+//todo export in main branch
 @AutoConfigureMockMvc
 @SpringBootTest
 class UserControllerTest {
@@ -30,22 +32,9 @@ class UserControllerTest {
     @Autowired
     private UserService userService;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private PetService petService;
 
-    @Test
-    void shouldNotSuccessFindAllUserWhenAllUsersNotFoundAndThrownNoSuchElementException() throws Exception {
-        Exception noSuchElementException = mockMvc.perform(get("/users")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound())
-                .andReturn()
-                .getResolvedException();
-
-        Assertions.assertThrows(java.util.NoSuchElementException.class,
-                () -> {
-                    assert noSuchElementException != null;
-                    throw noSuchElementException;
-                }
-        );
-    }
 
     @Test
     void shouldSuccessCreateUsersWithoutPets() throws Exception {
@@ -66,11 +55,13 @@ class UserControllerTest {
                 .getResponse()
                 .getContentAsString();
         User createdUser = objectMapper.readValue(createdUserJson, User.class);
-        Assertions.assertNotNull(createdUser.getId());
+
+        org.junit.jupiter.api.Assertions.assertDoesNotThrow(() -> userService.findById(createdUser.id()));
+        Assertions.assertNotNull(createdUser.id());
         Assertions.assertTrue(createdUser.isPetsEmpty());
-        Assertions.assertEquals(newUser.getName(), createdUser.getName());
-        Assertions.assertEquals(newUser.getEmail(), createdUser.getEmail());
-        Assertions.assertEquals(newUser.getAge(), createdUser.getAge());
+        Assertions.assertEquals(newUser.name(), createdUser.name());
+        Assertions.assertEquals(newUser.email(), createdUser.email());
+        Assertions.assertEquals(newUser.age(), createdUser.age());
     }
 
     @Test
@@ -96,15 +87,16 @@ class UserControllerTest {
 
         User createdUser = objectMapper.readValue(createdUserJson, User.class);
 
-        Assertions.assertNotNull(createdUser.getId());
+        org.junit.jupiter.api.Assertions.assertDoesNotThrow(() -> userService.findById(createdUser.id()));
+        Assertions.assertNotNull(createdUser.id());
         Assertions.assertFalse(createdUser.isPetsEmpty());
-        Assertions.assertEquals(newUser.getName(), createdUser.getName());
-        Assertions.assertEquals(newUser.getEmail(), createdUser.getEmail());
-        Assertions.assertEquals(newUser.getAge(), createdUser.getAge());
-        Assertions.assertEquals(newUser.getPets().getFirst().getName(), createdUser.getPets().getFirst().getName());
-        Assertions.assertNotNull(createdUser.getPets().getFirst().getId());
-        Assertions.assertNotNull(createdUser.getPets().getFirst().getUserId());
-        Assertions.assertEquals(createdUser.getId(), createdUser.getPets().getFirst().getUserId());
+        Assertions.assertEquals(newUser.name(), createdUser.name());
+        Assertions.assertEquals(newUser.email(), createdUser.email());
+        Assertions.assertEquals(newUser.age(), createdUser.age());
+        Assertions.assertEquals(newUser.pets().getFirst().name(), createdUser.pets().getFirst().name());
+        Assertions.assertNotNull(createdUser.pets().getFirst().id());
+        Assertions.assertNotNull(createdUser.pets().getFirst().userId());
+        Assertions.assertEquals(createdUser.id(), createdUser.pets().getFirst().userId());
     }
 
     @Test
@@ -135,7 +127,7 @@ class UserControllerTest {
                         "test@test.ru",
                         35,
                         new ArrayList<>())
-        ).getId();
+        ).id();
 
         var userForNotExpected = new User(
                 userCreatedId,
@@ -163,11 +155,13 @@ class UserControllerTest {
                 .getContentAsString();
 
         User updatedUser = objectMapper.readValue(jsonUpdatedUser, User.class);
+
+        org.junit.jupiter.api.Assertions.assertDoesNotThrow(() -> userService.findById(updatedUser.id()));
         Assertions.assertTrue(updatedUser.isPetsEmpty());
-        Assertions.assertEquals(userForNotExpected.getId(), updatedUser.getId());
-        Assertions.assertNotEquals(userForNotExpected.getName(), updatedUser.getName());
-        Assertions.assertNotEquals(userForNotExpected.getEmail(), updatedUser.getEmail());
-        Assertions.assertNotEquals(userForNotExpected.getAge(), updatedUser.getAge());
+        Assertions.assertEquals(userForNotExpected.id(), updatedUser.id());
+        Assertions.assertNotEquals(userForNotExpected.name(), updatedUser.name());
+        Assertions.assertNotEquals(userForNotExpected.email(), updatedUser.email());
+        Assertions.assertNotEquals(userForNotExpected.age(), updatedUser.age());
     }
 
     @Test
@@ -179,8 +173,8 @@ class UserControllerTest {
                         "test@test.ru",
                         35,
                         new ArrayList<>())
-        ).getId();
-
+        ).id();
+        Pet newPet = petService.create(new Pet(null, "cat", 1L));
         var userForNotExpected = new User(
                 userCreatedId,
                 "test",
@@ -194,7 +188,7 @@ class UserControllerTest {
                 "testUpdate",
                 "testUpdate@test.ru",
                 45,
-                new ArrayList<>(List.of(new Pet(null, "cat", null)))
+                List.of(newPet)
         );
         String jsonForUpdateUser = objectMapper.writeValueAsString(userForUpdate);
 
@@ -207,35 +201,37 @@ class UserControllerTest {
                 .getContentAsString();
 
         User updatedUser = objectMapper.readValue(jsonUpdatedUser, User.class);
+
+        org.junit.jupiter.api.Assertions.assertDoesNotThrow(() -> userService.findById(updatedUser.id()));
         Assertions.assertFalse(updatedUser.isPetsEmpty());
         Assertions.assertTrue(userForNotExpected.isPetsEmpty());
-        Assertions.assertEquals(userForNotExpected.getId(), updatedUser.getId());
-        Assertions.assertNotEquals(userForNotExpected.getName(), updatedUser.getName());
-        Assertions.assertNotEquals(userForNotExpected.getEmail(), updatedUser.getEmail());
-        Assertions.assertNotEquals(userForNotExpected.getAge(), updatedUser.getAge());
+        Assertions.assertEquals(userForNotExpected.id(), updatedUser.id());
+        Assertions.assertNotEquals(userForNotExpected.name(), updatedUser.name());
+        Assertions.assertNotEquals(userForNotExpected.email(), updatedUser.email());
+        Assertions.assertNotEquals(userForNotExpected.age(), updatedUser.age());
     }
 
     @Test
     void shouldNotUpdateUserWhenRequestInvalid() throws Exception {
+        Pet newPet = petService.create(new Pet(null, "cat", 1L));
         var invalidUser = new User(
                 null,
                 null,
                 "test@test.ru",
                 35,
-                new ArrayList<>(
-                        List.of(new Pet(null, "cat", null)))
+                List.of(newPet)
         );
         Long userIdForUpdate = 1L;
         String jsonUserForUpdate = objectMapper.writeValueAsString(invalidUser);
-        Exception HandlerMethodValidationException = mockMvc.perform(put("/users/{id}", userIdForUpdate)
+        Exception methodArgumentNotValidException = mockMvc.perform(put("/users/{id}", userIdForUpdate)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUserForUpdate))
                 .andExpect(status().isBadRequest())
                 .andReturn().getResolvedException();
-        Assertions.assertThrows(HandlerMethodValidationException.class,
+        Assertions.assertThrows(MethodArgumentNotValidException.class,
                 () -> {
-                    assert HandlerMethodValidationException != null;
-                    throw HandlerMethodValidationException;
+                    assert methodArgumentNotValidException != null;
+                    throw methodArgumentNotValidException;
                 }
         );
     }
@@ -250,7 +246,7 @@ class UserControllerTest {
                 new ArrayList<>(
                         List.of(new Pet(null, "cat", null)))
         );
-        Long userIdForSearch = 10L;
+        Long userIdForSearch = 1L;
 
         String jsonUserForUpdate = objectMapper.writeValueAsString(userForUpdate);
         Exception noSuchElementException = mockMvc.perform(put("/users/{id}", userIdForSearch)
@@ -264,6 +260,7 @@ class UserControllerTest {
                     throw noSuchElementException;
                 }
         );
+
     }
 
     @Test
@@ -278,14 +275,17 @@ class UserControllerTest {
                                 List.of(new Pet(null, "cat", null))))
         );
 
-        mockMvc.perform(delete("/users/{id}", userForDelete.getId())
+        mockMvc.perform(delete("/users/{id}", userForDelete.id())
                         .contentType(MediaType.APPLICATION_JSON))
-                        .andExpect(status().isNoContent());
+                        .andExpect(status().isOk());
+        Assertions.assertThrows(java.util.NoSuchElementException.class,
+                () ->userService.findById(userForDelete.id())
+        );
     }
 
     @Test
     void shouldNotSuccessUserDeleteWhenUserNotFoundAndThrownNoSuchElementException() throws Exception {
-        Long userIdForDelete = 10L;
+        Long userIdForDelete = 1L;
         Exception noSuchElementException = mockMvc.perform(delete("/users/{id}", userIdForDelete)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
@@ -340,6 +340,21 @@ class UserControllerTest {
         assertThat(foundUsers).usingRecursiveFieldByFieldElementComparator().contains(userSecondExpected);
     }
 
+    @Test
+    void shouldNotSuccessFindAllUserWhenAllUsersNotFoundAndThrownNoSuchElementException() throws Exception {
+        Exception noSuchElementException = mockMvc.perform(get("/users")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andReturn()
+                .getResolvedException();
+
+        Assertions.assertThrows(java.util.NoSuchElementException.class,
+                () -> {
+                    assert noSuchElementException != null;
+                    throw noSuchElementException;
+                }
+        );
+    }
 
     @Test
     void shouldSuccessUserFindAllWithParameterNameAndEmail() throws Exception {
@@ -400,8 +415,8 @@ class UserControllerTest {
                         new ArrayList<>(
                                 List.of(new Pet(null, "cat", null))))
         );
-        String parameterName = "testn";
-        String parameterEmail = "testn@test.ru";
+        String parameterName = "test";
+        String parameterEmail = "test@test.ru";
 
         Exception noSuchElementException = mockMvc.perform(get("/users")
                         .param("name", parameterName)
@@ -433,7 +448,7 @@ class UserControllerTest {
                                 List.of(new Pet(null, "cat", null))))
         );
 
-        String jsonFoundUser = mockMvc.perform(get("/users/{id}", userExpected.getId())
+        String jsonFoundUser = mockMvc.perform(get("/users/{id}", userExpected.id())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -448,7 +463,7 @@ class UserControllerTest {
 
     @Test
     void shouldNotSuccessFindByIdUserWhenUserNotFoundAndThrownNoSuchElementException() throws Exception {
-        Long userIdForSearch = 10L;
+        Long userIdForSearch = 1L;
         Exception noSuchElementException = mockMvc.perform(get("/users/{id}", userIdForSearch)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
