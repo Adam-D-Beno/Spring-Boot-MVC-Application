@@ -86,7 +86,7 @@ public class PetController {
                 .body(mapper.toDto(petService.findAll(name, userId)));
     }
 
-    @GetMapping("/pets/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<PetDto> findById(@PathVariable("id") @NotNull Long id) {
         LOGGER.info("Get request in PetController find for pet with id: id={}", id);
         return ResponseEntity
