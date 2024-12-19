@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import org.das.springmvc.dto.Mapper;
 import org.das.springmvc.dto.UserDto;
 import org.das.springmvc.model.User;
+import org.das.springmvc.service.PetService;
 import org.das.springmvc.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,12 +24,14 @@ public class UserController {
     private final static Logger LOGGER = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
     private final Mapper<User, UserDto> mapper;
+    private final PetService petService;
 
     @Autowired
     public UserController(UserService userService,
-                          Mapper<User, UserDto> mapper) {
+                          Mapper<User, UserDto> mapper, PetService petService) {
         this.userService = userService;
         this.mapper = mapper;
+        this.petService = petService;
     }
 
     @PostMapping()
@@ -55,9 +58,11 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<UserDto> deleteById(@PathVariable("id") @NotNull Long id) {
         LOGGER.info("Get request in UserController delete for user with id: id={}", id);
+        User deletedUser = userService.deleteById(id);
+        petService.deleteById(deletedUser.pets());
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(mapper.toDto(userService.deleteById(id)));
+                .body(mapper.toDto(deletedUser));
     }
 
     @GetMapping()
