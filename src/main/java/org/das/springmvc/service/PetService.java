@@ -62,6 +62,12 @@ public class PetService {
                         .formatted(id)));
     }
 
+    public void deleteById(List<Pet> pets) {
+        LOGGER.info("execute method deleteById in PetService, Pets: pets={}", pets);
+        pets.stream().filter(pet -> pet.userId() != null)
+                .forEach(pet -> petMap.remove(pet.id()));
+    }
+
     public List<Pet> findAll(String name, Long userId) {
         LOGGER.info("execute method findAll in PetService, for pet with name: name={}, userId: userId={}"
                 , name, userId);
