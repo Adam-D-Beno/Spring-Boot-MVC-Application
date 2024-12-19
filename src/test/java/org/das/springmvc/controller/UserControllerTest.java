@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.das.springmvc.model.Pet;
 import org.das.springmvc.model.User;
+import org.das.springmvc.service.PetService;
 import org.das.springmvc.service.UserService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,8 @@ class UserControllerTest {
     @Autowired
     private UserService userService;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private PetService petService;
 
 
     @Test
@@ -170,7 +173,7 @@ class UserControllerTest {
                         35,
                         new ArrayList<>())
         ).id();
-
+        Pet newPet = petService.create(new Pet(null, "cat", 1L));
         var userForNotExpected = new User(
                 userCreatedId,
                 "test",
@@ -184,7 +187,7 @@ class UserControllerTest {
                 "testUpdate",
                 "testUpdate@test.ru",
                 45,
-                new ArrayList<>(List.of(new Pet(null, "cat", null)))
+                new ArrayList<>(List.of(newPet))
         );
         String jsonForUpdateUser = objectMapper.writeValueAsString(userForUpdate);
 
