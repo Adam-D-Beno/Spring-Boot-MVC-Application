@@ -61,7 +61,6 @@ public class PetService {
                 .filter(pet -> petMap.containsKey(pet.id()))
                 .filter(pet -> pet.userId() != null)
                 .peek(pet -> petMap.put(pet.id(), pet))
-//                .map(pet -> petMap.put(pet.id(), pet)) // .peek(pet -> petMap.put(pet.id(), pet))
                 .toList();
         if (pets.isEmpty()) {
           throw new NoSuchElementException("No exist List pets = %s"
