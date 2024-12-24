@@ -89,8 +89,8 @@ public class UserService {
                 ,name ,email);
         List<User> users = userMap.values()
                 .stream()
-                .filter(user -> Objects.isNull(name) || user.name().equals(name))
-                .filter(user -> Objects.isNull(email) || user.email().equals(email))
+                .filter(user -> Objects.equals(name, user.name()))
+                .filter(user -> Objects.equals(email, user.email()))
                 .toList();
         if (users.isEmpty()) {
             throw new NoSuchElementException("No such users = %s parameter: name = %s, email = %s"
